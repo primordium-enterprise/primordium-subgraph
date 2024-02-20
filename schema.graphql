@@ -1,0 +1,4 @@
+type Proposal @entity {
+  id: Bytes!
+  proposer: Bytes!
+}

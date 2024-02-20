@@ -1,0 +1,20 @@
+{
+  "name": "primordium-dao-subgraph",
+  "license": "MIT",
+  "scripts": {
+    "codegen": "graph codegen --output-dir src/types/",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ primordium-dao",
+    "create-local": "graph create --node http://localhost:8020/ primordium-dao",
+    "remove-local": "graph remove --node http://localhost:8020/ primordium-dao",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 primordium-dao",
+    "test": "graph test"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.68.0",
+    "@graphprotocol/graph-ts": "0.32.0"
+  },
+  "devDependencies": {
+    "matchstick-as": "0.5.0"
+  }
+}
