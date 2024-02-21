@@ -1,5 +1,4 @@
 import {
-  PrimordiumGovernorV1,
   ProposalCanceled,
   ProposalCreated,
   ProposalDeadlineExtended,
@@ -10,10 +9,32 @@ import {
   VoteCast,
   VoteCastWithParams,
 } from "./types/PrimordiumGovernorV1/PrimordiumGovernorV1"
+import { extractTitleFromDescription, getProposal } from "./utils/primordium-governor-v1-utils"
 
 export function handleProposalCanceled(event: ProposalCanceled): void {}
 
-export function handleProposalCreated(event: ProposalCreated): void {}
+export function handleProposalCreated(event: ProposalCreated): void {
+  let proposal = getProposal(event.params.proposalId);
+
+  proposal.proposer = event.params.proposer;
+  proposal.targets = event.params.targets;
+  proposal.values = event.params.values;
+  proposal.calldatas = event.params.calldatas;
+  proposal.signatures = event.params.signatures;
+  proposal.createdAtBlock = event.block.number;
+  proposal.createdAtTimestamp = event.block.timestamp;
+  proposal.title = extractTitleFromDescription(event.params.description);
+  proposal.description = event.params.description;
+  proposal.voteStart = event.params.voteStart;
+  proposal.voteEnd = event.params.voteEnd;
+
+  // Infer "blocknumber" or "timestamp" mode based on the event voteStart value
+  if (event.params.voteStart >= event.block.timestamp) {
+    proposal.clockMode = "timestamp";
+  } else {
+    proposal.clockMode = "blocknumber";
+  }
+}
 
 export function handleProposalDeadlineExtended(
   event: ProposalDeadlineExtended

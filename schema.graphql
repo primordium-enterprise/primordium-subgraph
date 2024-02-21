@@ -1,4 +1,45 @@
+enum CLOCK_MODE {
+  blocknumber
+  timestamp
+}
+
 type Proposal @entity {
+  # The proposal ID used to identifiy the proposal on-chain (an incrementing integer for PrimordiumDAO)
   id: Bytes!
+
+  # The address that submitted the proposal
   proposer: Bytes!
+
+  # The proposal execution's target addresses
+  targets: [Bytes!]!
+
+  # The proposal execution's transaction values
+  values: [BigInt!]!
+
+  # The proposal execution's transaction calldatas
+  calldatas: [Bytes!]!
+
+  # The corresponding signatures for each calldata
+  signatures: [String!]!
+
+  # Proposal creation block
+  createdAtBlock: BigInt!
+
+  # Proposal creation timestamp
+  createdAtTimestamp: BigInt!
+
+  # Proposal title (from the description)
+  title: String!
+
+  # Full proposal description
+  description: String!
+
+  # Proposal voting begins
+  voteStart: BigInt!
+
+  # Proposal voting ends
+  voteEnd: BigInt!
+
+  # Inferred EIP-6372 CLOCK_MODE(), will be either "mode=blocknumber&from=default" or "mode=timestamp"
+  clockMode: CLOCK_MODE!
 }
