@@ -21,10 +21,10 @@ To run locally:
 2. Start the graph node locally using docker:
 
     ```bash
-    docker-compose up
+    pnpm graph-node
     ```
 
-3. Deploy the anvil subgraph template to the graph node (the below command includes `pnpm prepare:anvil` to create the proper subgraph.yaml manifest and `pnpm create:local` to create the subgraph on the local Graph Node prior to deploying):
+3. Deploy the anvil subgraph template to the graph node (the below command creates the proper subgraph.yaml manifest with the mustache template and additionally creates the subgraph on the local Graph Node prior to deploying):
 
     ```bash
     pnpm deploy:local

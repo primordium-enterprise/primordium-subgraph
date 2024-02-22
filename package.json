@@ -2,6 +2,7 @@
   "name": "primordium-dao-subgraph",
   "license": "MIT",
   "scripts": {
+    "graph-node": "docker-compose up",
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ primordium-dao",
