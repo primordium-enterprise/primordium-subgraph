@@ -30,11 +30,11 @@ export function extractTitleFromDescription(description: string): string {
       break;
     } else if (i < lines.length - 1) {
       let nextLine = lines[i + 1].trim();
+      // If next line is exclusively 1 or more "=" characters, then this is a markdown title
       let split = nextLine.split("=");
       if (
         split.length > 1 &&
-        split.length == nextLine.length + 1 &&
-        split.every((item) => item === "")
+        split.every((item) => item.length === 0)
       ) {
         title = line;
         break;
@@ -46,22 +46,21 @@ export function extractTitleFromDescription(description: string): string {
   return title.replaceAll("**", "").replaceAll("__", "");
 }
 
-export function getProposal<B extends boolean = true>(
-  id: BigInt | Bytes,
-  createIfNotFound: B = true as B
-): B extends true ? Proposal : Proposal | null {
-  if (id instanceof BigInt) {
-    id = Bytes.fromBigInt(id);
+/**
+ * Gets a proposal by ID. Creates one if none exists. Can pass a BigInt or Bytes value to the ID.
+ */
+export function getOrCreateProposal<T>(
+  id: T,
+): Proposal {
+  let _id: Bytes = id instanceof BigInt ? Bytes.fromHexString(id.toHex()) : id as Bytes;
+
+  let proposal = Proposal.load(_id);
+
+  if (proposal === null) {
+    proposal = new Proposal(_id);
   }
 
-  let proposal = Proposal.load(id);
-
-  if (proposal === null && createIfNotFound) {
-    proposal = new Proposal(id);
-    return proposal;
-  }
-
-  return proposal as Proposal;
+  return proposal;
 }
 
 export function createProposalCanceledEvent(

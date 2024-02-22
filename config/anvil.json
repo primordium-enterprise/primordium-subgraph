@@ -1,0 +1,7 @@
+{
+    "network": "mainnet",
+    "PrimordiumGovernorV1": {
+        "address": "0xc927568a31B6a6d84DBA2DB6849b5c58A6665b3F",
+        "startBlock": 0
+    }
+}

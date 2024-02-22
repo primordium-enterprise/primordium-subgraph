@@ -1,3 +1,4 @@
+import { Bytes } from "@graphprotocol/graph-ts";
 import {
   ProposalCanceled,
   ProposalCreated,
@@ -9,15 +10,15 @@ import {
   VoteCast,
   VoteCastWithParams,
 } from "./types/PrimordiumGovernorV1/PrimordiumGovernorV1"
-import { extractTitleFromDescription, getProposal } from "./utils/primordium-governor-v1-utils"
+import { extractTitleFromDescription, getOrCreateProposal } from "./utils/primordium-governor-v1-utils"
 
 export function handleProposalCanceled(event: ProposalCanceled): void {}
 
 export function handleProposalCreated(event: ProposalCreated): void {
-  let proposal = getProposal(event.params.proposalId);
+  let proposal = getOrCreateProposal(event.params.proposalId);
 
   proposal.proposer = event.params.proposer;
-  proposal.targets = event.params.targets;
+  proposal.targets = changetype<Bytes[]>(event.params.targets);
   proposal.values = event.params.values;
   proposal.calldatas = event.params.calldatas;
   proposal.signatures = event.params.signatures;
@@ -34,6 +35,8 @@ export function handleProposalCreated(event: ProposalCreated): void {
   } else {
     proposal.clockMode = "blocknumber";
   }
+
+  proposal.save();
 }
 
 export function handleProposalDeadlineExtended(

@@ -1,3 +1,12 @@
 node_modules/
 .DS_STORE
 src/types/
+
+# Docker data stores
+data/
+
+# Subgraph build
+build/
+
+# Ignore the actual subgraph.yaml file, this is generated from the template
+subgraph.yaml
