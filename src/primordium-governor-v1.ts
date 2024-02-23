@@ -9,7 +9,7 @@ import {
   RoleRevoked,
   VoteCast,
   VoteCastWithParams,
-} from "./types/PrimordiumGovernorV1/PrimordiumGovernorV1"
+} from "../generated/PrimordiumGovernorV1/PrimordiumGovernorV1"
 import { extractTitleFromDescription, getOrCreateProposal } from "./utils/primordium-governor-v1-utils"
 
 export function handleProposalCanceled(event: ProposalCanceled): void {}

@@ -10,8 +10,8 @@ import {
   RoleRevoked,
   VoteCast,
   VoteCastWithParams,
-} from "../types/PrimordiumGovernorV1/PrimordiumGovernorV1";
-import { Proposal } from "../types/schema";
+} from "../../generated/PrimordiumGovernorV1/PrimordiumGovernorV1";
+import { Proposal } from "../../generated/schema";
 
 /**
  * Extracts the title from a proposal markdown description. Looks for the first occurrence of a top-level heading to use

@@ -3,7 +3,7 @@
   "license": "MIT",
   "scripts": {
     "graph-node": "docker-compose up",
-    "codegen": "graph codegen --output-dir src/types/",
+    "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ primordium-dao",
     "prepare:anvil": "mustache config/anvil.json subgraph.template.yaml > subgraph.yaml",
