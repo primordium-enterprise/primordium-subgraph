@@ -3,5 +3,9 @@
     "PrimordiumGovernorV1": {
         "address": "0xc927568a31B6a6d84DBA2DB6849b5c58A6665b3F",
         "startBlock": 0
+    },
+    "PrimordiumTokenV1": {
+        "address": "0x0f03C4dfd08a6660B9EBD46AB72649975fa1E2f1",
+        "startBlock": 0
     }
 }

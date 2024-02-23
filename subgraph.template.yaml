@@ -1,7 +1,7 @@
 specVersion: 1.0.0
 description: Subgraph indexing of PrimordiumDAO governance data.
 indexerHints:
-  prune: auto
+  prune: never
 schema:
   file: ./schema.graphql
 dataSources:
@@ -41,3 +41,30 @@ dataSources:
         - event: VoteCastWithParams(indexed address,indexed uint256,uint8,uint256,string,bytes)
           handler: handleVoteCastWithParams
       file: ./src/primordium-governor-v1.ts
+  - kind: ethereum
+    name: PrimordiumTokenV1
+    network: mainnet
+    source:
+      address: "{{PrimordiumTokenV1.address}}"
+      abi: PrimordiumTokenV1
+      startBlock: {{PrimordiumTokenV1.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Member
+        - Delegate
+      abis:
+        - name: PrimordiumTokenV1
+          file: ./abis/PrimordiumTokenV1.json
+      eventHandlers:
+        - event: DelegateChanged(indexed address,indexed address,indexed address)
+          handler: handleDelegateChanged
+        - event: DelegateVotesChanged(indexed address,uint256,uint256)
+          handler: handleDelegateVotesChanged
+        - event: SnapshotCreated(indexed uint256,indexed uint256)
+          handler: handleSnapshotCreated
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/primordium-token-v1.ts

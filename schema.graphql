@@ -3,6 +3,25 @@ enum CLOCK_MODE {
   timestamp
 }
 
+# Represents MUSHI token holders, who can delegate their votes to participate in governance
+type Member @entity {
+  # The address of the member
+  id: Bytes!
+
+  # The Delegate that this member's votes are delegated to (null if not delegated at all)
+  delegate: Delegate
+
+  # This member's raw MUSHI token balance (not adjusted for decimals)
+  tokenBalance: BigInt!
+}
+
+# Represents an address with MUSHI votes delegated to it.
+type Delegate @entity {
+  # The address of the delegate
+  id: Bytes!
+}
+
+# Proposals created on the Governor proxy contract
 type Proposal @entity {
   # The proposal ID used to identifiy the proposal on-chain (an incrementing integer for PrimordiumDAO)
   id: Bytes!

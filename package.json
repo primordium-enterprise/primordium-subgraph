@@ -7,7 +7,7 @@
     "build": "graph build",
     "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ primordium-dao",
     "prepare:anvil": "mustache config/anvil.json subgraph.template.yaml > subgraph.yaml",
-    "create:local": "pnpm prepare:anvil && graph create --node http://localhost:8020/ primordium-dao",
+    "create:local": "pnpm prepare:anvil && pnpm codegen && graph create --node http://localhost:8020/ primordium-dao",
     "remove:local": "graph remove --node http://localhost:8020/ primordium-dao",
     "deploy:local": "pnpm create:local && graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 primordium-dao",
     "test": "graph test"
