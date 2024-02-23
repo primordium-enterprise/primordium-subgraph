@@ -62,3 +62,10 @@ type Proposal @entity {
   # Inferred EIP-6372 CLOCK_MODE(), will be either "mode=blocknumber&from=default" or "mode=timestamp"
   clockMode: CLOCK_MODE!
 }
+
+type GovernanceData @entity {
+  id: Bytes!
+
+  # The total MUSHI supply
+  totalSupply: BigInt!
+}

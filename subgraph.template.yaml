@@ -55,6 +55,7 @@ dataSources:
       entities:
         - Member
         - Delegate
+        - GovernanceData
       abis:
         - name: PrimordiumTokenV1
           file: ./abis/PrimordiumTokenV1.json
