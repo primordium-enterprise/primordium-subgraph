@@ -11,13 +11,16 @@ import {
   VoteCastWithParams,
 } from "../generated/PrimordiumGovernorV1/PrimordiumGovernorV1";
 import { CANCELER_ROLE, PROPOSER_ROLE, extractTitleFromDescription, getOrCreateDelegate, getOrCreateProposal } from "./utils";
+import { Delegate } from "../generated/schema";
 
 export function handleProposalCanceled(event: ProposalCanceled): void {}
 
 export function handleProposalCreated(event: ProposalCreated): void {
   let proposal = getOrCreateProposal(event.params.proposalId);
+  let delegate = Delegate.load(event.params.proposer);
 
   proposal.proposer = event.params.proposer;
+  proposal.isProposerRole = !!delegate && delegate.proposerRoleExpiresAt.gt(event.block.timestamp);
   proposal.targets = changetype<Bytes[]>(event.params.targets);
   proposal.values = event.params.values;
   proposal.calldatas = event.params.calldatas;

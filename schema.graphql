@@ -55,6 +55,9 @@ type Proposal @entity {
   # The address that submitted the proposal
   proposer: Delegate!
 
+  # True if the Delegate had the PROPOSER_ROLE() when the proposal was created.
+  isProposerRole: Boolean!
+
   # The proposal execution's target addresses
   targets: [Bytes!]!
 

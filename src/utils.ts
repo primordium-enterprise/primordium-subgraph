@@ -75,7 +75,7 @@ export function getOrCreateDelegate(address: Address): Delegate {
  */
 export function getOrCreateProposal<T>(id: T): Proposal {
   let _id: Bytes =
-    id instanceof BigInt ? Bytes.fromHexString(id.toHex()) : (id as Bytes);
+    id instanceof BigInt ? Bytes.fromByteArray(ByteArray.fromBigInt(id)) : (id as Bytes);
 
   let proposal = Proposal.load(_id);
 
