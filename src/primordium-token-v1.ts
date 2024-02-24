@@ -24,7 +24,7 @@ export function handleDelegateVotesChanged(
 export function handleSnapshotCreated(event: SnapshotCreatedEvent): void {}
 
 export function handleTransfer(event: TransferEvent): void {
-  if (event.params.from === Address.zero()) {
+  if (event.params.from.equals(Address.zero())) {
     const governanceData = getGovernanceData();
     governanceData.totalSupply = governanceData.totalSupply.plus(
       event.params.value
@@ -36,7 +36,7 @@ export function handleTransfer(event: TransferEvent): void {
     fromMember.save();
   }
 
-  if (event.params.to === Address.zero()) {
+  if (event.params.to.equals(Address.zero())) {
     const governanceData = getGovernanceData();
     governanceData.totalSupply = governanceData.totalSupply.minus(
       event.params.value

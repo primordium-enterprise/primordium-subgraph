@@ -4,6 +4,10 @@ node_modules/
 # codegen
 generated/
 
+# matchstick binaries
+tests/.*
+matchstick
+
 # Docker data stores
 data/
 

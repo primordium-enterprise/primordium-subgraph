@@ -15,28 +15,6 @@ import {
   Upgraded
 } from "../generated/PrimordiumTokenV1/PrimordiumTokenV1"
 
-export function createApprovalEvent(
-  owner: Address,
-  spender: Address,
-  value: BigInt
-): Approval {
-  let approvalEvent = changetype<Approval>(newMockEvent())
-
-  approvalEvent.parameters = new Array()
-
-  approvalEvent.parameters.push(
-    new ethereum.EventParam("owner", ethereum.Value.fromAddress(owner))
-  )
-  approvalEvent.parameters.push(
-    new ethereum.EventParam("spender", ethereum.Value.fromAddress(spender))
-  )
-  approvalEvent.parameters.push(
-    new ethereum.EventParam("value", ethereum.Value.fromUnsignedBigInt(value))
-  )
-
-  return approvalEvent
-}
-
 export function createDelegateChangedEvent(
   delegator: Address,
   fromDelegate: Address,
@@ -95,29 +73,6 @@ export function createDelegateVotesChangedEvent(
   return delegateVotesChangedEvent
 }
 
-export function createEIP712DomainChangedEvent(): EIP712DomainChanged {
-  let eip712DomainChangedEvent = changetype<EIP712DomainChanged>(newMockEvent())
-
-  eip712DomainChangedEvent.parameters = new Array()
-
-  return eip712DomainChangedEvent
-}
-
-export function createInitializedEvent(version: BigInt): Initialized {
-  let initializedEvent = changetype<Initialized>(newMockEvent())
-
-  initializedEvent.parameters = new Array()
-
-  initializedEvent.parameters.push(
-    new ethereum.EventParam(
-      "version",
-      ethereum.Value.fromUnsignedBigInt(version)
-    )
-  )
-
-  return initializedEvent
-}
-
 export function createMaxSupplyChangeEvent(
   oldMaxSupply: BigInt,
   newMaxSupply: BigInt
@@ -140,55 +95,6 @@ export function createMaxSupplyChangeEvent(
   )
 
   return maxSupplyChangeEvent
-}
-
-export function createOwnershipTransferredEvent(
-  previousOwner: Address,
-  newOwner: Address
-): OwnershipTransferred {
-  let ownershipTransferredEvent = changetype<OwnershipTransferred>(
-    newMockEvent()
-  )
-
-  ownershipTransferredEvent.parameters = new Array()
-
-  ownershipTransferredEvent.parameters.push(
-    new ethereum.EventParam(
-      "previousOwner",
-      ethereum.Value.fromAddress(previousOwner)
-    )
-  )
-  ownershipTransferredEvent.parameters.push(
-    new ethereum.EventParam("newOwner", ethereum.Value.fromAddress(newOwner))
-  )
-
-  return ownershipTransferredEvent
-}
-
-export function createSharesOnboarderUpdateEvent(
-  oldSharesOnboarder: Address,
-  newSharesOnboarder: Address
-): SharesOnboarderUpdate {
-  let sharesOnboarderUpdateEvent = changetype<SharesOnboarderUpdate>(
-    newMockEvent()
-  )
-
-  sharesOnboarderUpdateEvent.parameters = new Array()
-
-  sharesOnboarderUpdateEvent.parameters.push(
-    new ethereum.EventParam(
-      "oldSharesOnboarder",
-      ethereum.Value.fromAddress(oldSharesOnboarder)
-    )
-  )
-  sharesOnboarderUpdateEvent.parameters.push(
-    new ethereum.EventParam(
-      "newSharesOnboarder",
-      ethereum.Value.fromAddress(newSharesOnboarder)
-    )
-  )
-
-  return sharesOnboarderUpdateEvent
 }
 
 export function createSnapshotCreatedEvent(
@@ -235,43 +141,4 @@ export function createTransferEvent(
   )
 
   return transferEvent
-}
-
-export function createTreasuryChangeEvent(
-  oldTreasury: Address,
-  newTreasury: Address
-): TreasuryChange {
-  let treasuryChangeEvent = changetype<TreasuryChange>(newMockEvent())
-
-  treasuryChangeEvent.parameters = new Array()
-
-  treasuryChangeEvent.parameters.push(
-    new ethereum.EventParam(
-      "oldTreasury",
-      ethereum.Value.fromAddress(oldTreasury)
-    )
-  )
-  treasuryChangeEvent.parameters.push(
-    new ethereum.EventParam(
-      "newTreasury",
-      ethereum.Value.fromAddress(newTreasury)
-    )
-  )
-
-  return treasuryChangeEvent
-}
-
-export function createUpgradedEvent(implementation: Address): Upgraded {
-  let upgradedEvent = changetype<Upgraded>(newMockEvent())
-
-  upgradedEvent.parameters = new Array()
-
-  upgradedEvent.parameters.push(
-    new ethereum.EventParam(
-      "implementation",
-      ethereum.Value.fromAddress(implementation)
-    )
-  )
-
-  return upgradedEvent
 }
