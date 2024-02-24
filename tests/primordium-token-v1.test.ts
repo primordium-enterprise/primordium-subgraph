@@ -9,23 +9,24 @@ import {
 } from "matchstick-as/assembly/index";
 import {
   createDelegateChangedEvent,
+  createDelegateVotesChangedEvent,
   createTransferEvent,
 } from "./primordium-token-v1-utils";
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   handleTransfer,
   handleDelegateChanged,
+  handleDelegateVotesChanged,
 } from "../src/primordium-token-v1";
-import { GovernanceData, Member } from "../generated/schema";
-import { ADDRESS_ONE, ADDRESS_THREE, ADDRESS_TWO } from "./test-utils";
+import { Delegate, GovernanceData, Member } from "../generated/schema";
+import { ADDRESS_1, ADDRESS_2 } from "./test-utils";
 import { getGovernanceData, getOrCreateMember } from "../src/utils";
 
-const delegator = Address.fromString(ADDRESS_ONE);
-
+const delegator = Address.fromString(ADDRESS_1);
 describe("handleDelegateChanged()", () => {
   test("delegate for first time", () => {
     const fromDelegate = Address.zero();
-    const toDelegate = Address.fromString(ADDRESS_TWO);
+    const toDelegate = Address.fromString(ADDRESS_2);
 
     let member = getOrCreateMember(delegator);
     assert.assertTrue(!member.delegate); // null
@@ -41,7 +42,11 @@ describe("handleDelegateChanged()", () => {
 
   test("delegate to self", () => {
     handleDelegateChanged(
-      createDelegateChangedEvent(delegator, Address.fromString(ADDRESS_TWO), delegator)
+      createDelegateChangedEvent(
+        delegator,
+        Address.fromString(ADDRESS_2),
+        delegator
+      )
     );
 
     let member = Member.load(delegator) as Member;
@@ -63,9 +68,21 @@ describe("handleDelegateChanged()", () => {
   });
 });
 
-const mintTo = Address.fromString(ADDRESS_ONE);
-const mintAmount = BigInt.fromI32(100);
+const delegateAddr = Address.fromString(ADDRESS_1);
+describe("handleDelegateVotesChanged()", () => {
+  test("Delegate created", () => {
+    const newVotes = BigInt.fromI32(100);
+    handleDelegateVotesChanged(
+      createDelegateVotesChangedEvent(delegateAddr, BigInt.fromI32(0), newVotes)
+    );
 
+    let delegate = Delegate.load(delegateAddr) as Delegate;
+    assert.bigIntEquals(delegate.delegatedVotesBalance, newVotes);
+  });
+});
+
+const mintTo = Address.fromString(ADDRESS_1);
+const mintAmount = BigInt.fromI32(100);
 describe("handleTransfer()", () => {
   afterEach(() => {
     clearStore();
@@ -93,7 +110,7 @@ describe("handleTransfer()", () => {
     afterEach(clearStore);
 
     test("send from address 1 to address 2", () => {
-      const transferredTo = Address.fromString(ADDRESS_TWO);
+      const transferredTo = Address.fromString(ADDRESS_2);
       const transferredAmount = mintAmount.div(BigInt.fromI32(2));
       handleTransfer(
         createTransferEvent(mintTo, transferredTo, transferredAmount)

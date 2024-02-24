@@ -19,6 +19,24 @@ type Member @entity {
 type Delegate @entity {
   # The address of the delegate
   id: Bytes!
+
+  # The amount of votes that are delegated to this address
+  delegatedVotesBalance: BigInt!
+
+  # A list of ProposalVote entities casted by this delegate
+  proposalVotes: [ProposalVote!]! @derivedFrom(field: "delegate")
+
+  # A list of Proposal entities that were created by this delegate
+  proposalsCreated: [Proposal!]! @derivedFrom(field: "proposer")
+
+  # A list of Member entities that have delegated their votes to this Delegate
+  membersRepresented: [Member!]! @derivedFrom(field: "delegate")
+
+  # True if this delegate has the "PROPOSER_ROLE()"
+  hasProposerRole: Boolean!
+
+  # True if this delegate has the "CANCELER_ROLE()"
+  hasCancelerRole: Boolean!
 }
 
 # Proposals created on the Governor proxy contract
@@ -27,7 +45,7 @@ type Proposal @entity {
   id: Bytes!
 
   # The address that submitted the proposal
-  proposer: Bytes!
+  proposer: Delegate!
 
   # The proposal execution's target addresses
   targets: [Bytes!]!
@@ -61,6 +79,14 @@ type Proposal @entity {
 
   # Inferred EIP-6372 CLOCK_MODE(), will be either "mode=blocknumber&from=default" or "mode=timestamp"
   clockMode: CLOCK_MODE!
+}
+
+type ProposalVote @entity {
+  # The concatenation of the Delegate.id and the Proposal.id
+  id: Bytes!
+
+  # The delegate that cast this proposal vote
+  delegate: Delegate!
 }
 
 type GovernanceData @entity {

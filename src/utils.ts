@@ -38,6 +38,7 @@ export function getOrCreateMember(address: Address): Member {
   if (member == null) {
     member = new Member(id);
     member.tokenBalance = BigInt.zero();
+    member.save();
   }
 
   return member;
@@ -49,6 +50,10 @@ export function getOrCreateDelegate(address: Address): Delegate {
 
   if (delegate == null) {
     delegate = new Delegate(id);
+    delegate.delegatedVotesBalance = BigInt.zero();
+    delegate.hasProposerRole = false;
+    delegate.hasCancelerRole = false;
+    delegate.save();
   }
 
   return delegate;

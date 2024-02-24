@@ -6,7 +6,11 @@ import {
   Transfer as TransferEvent,
 } from "../generated/PrimordiumTokenV1/PrimordiumTokenV1";
 import { Member, Delegate } from "../generated/schema";
-import { getGovernanceData, getOrCreateMember } from "./utils";
+import {
+  getGovernanceData,
+  getOrCreateDelegate,
+  getOrCreateMember,
+} from "./utils";
 import { log } from "matchstick-as";
 
 export function handleDelegateChanged(event: DelegateChangedEvent): void {
@@ -14,11 +18,12 @@ export function handleDelegateChanged(event: DelegateChangedEvent): void {
 
   if (
     event.params.fromDelegate.notEqual(
-      !!member.delegate ? member.delegate as Bytes : Address.zero()
+      !!member.delegate ? (member.delegate as Bytes) : Address.zero()
     )
   ) {
     log.warning(
-      "Current member 'delegate' field does not match the event 'fromDelegate' param.\ndelegate: {}\nfromDelegate: {}\nevent transaction hash: {}",
+      "Current member 'delegate' field does not match the event 'fromDelegate' param." +
+        "\ndelegate: {}\nfromDelegate: {}\nevent transaction hash: {}",
       [
         !!member.delegate ? (member.delegate as Bytes).toHex() : "null",
         event.params.fromDelegate.toHex(),
@@ -37,7 +42,23 @@ export function handleDelegateChanged(event: DelegateChangedEvent): void {
 
 export function handleDelegateVotesChanged(
   event: DelegateVotesChangedEvent
-): void {}
+): void {
+  let delegate = getOrCreateDelegate(event.params.delegate);
+
+  if (delegate.delegatedVotesBalance.notEqual(event.params.previousVotes)) {
+    log.warning(
+      "Delegate 'delgatedVotesBalance' not equal to 'previousVotes' from event." +
+        "\ndelegate: {}\ndelegatedVotesBalance (hex): {}\nevent previousVotes (hex): {}",
+      [
+        delegate.id.toHex(),
+        delegate.delegatedVotesBalance.toHex(),
+        event.params.previousVotes.toHex(),
+      ]
+    );
+  }
+  delegate.delegatedVotesBalance = event.params.newVotes;
+  delegate.save();
+}
 
 export function handleSnapshotCreated(event: SnapshotCreatedEvent): void {}
 
