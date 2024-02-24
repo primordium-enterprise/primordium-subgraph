@@ -35,7 +35,7 @@ export function getOrCreateMember(address: Address): Member {
   let id = changetype<Bytes>(address);
   let member = Member.load(id);
 
-  if (member === null) {
+  if (member == null) {
     member = new Member(id);
     member.tokenBalance = BigInt.zero();
   }
@@ -47,7 +47,7 @@ export function getOrCreateDelegate(address: Address): Delegate {
   let id = changetype<Bytes>(address);
   let delegate = Delegate.load(id);
 
-  if (delegate === null) {
+  if (delegate == null) {
     delegate = new Delegate(id);
   }
 
@@ -63,7 +63,7 @@ export function getOrCreateProposal<T>(id: T): Proposal {
 
   let proposal = Proposal.load(_id);
 
-  if (proposal === null) {
+  if (proposal == null) {
     proposal = new Proposal(_id);
   }
 
@@ -75,7 +75,7 @@ export const GOVERNANCE_DATA_ID: Bytes = Bytes.fromUTF8("GOVERNANCE_DATA");
 export function getGovernanceData(): GovernanceData {
   let governanceData = GovernanceData.load(GOVERNANCE_DATA_ID);
 
-  if (governanceData === null) {
+  if (governanceData == null) {
     governanceData = new GovernanceData(GOVERNANCE_DATA_ID);
     governanceData.totalSupply = BigInt.zero();
     governanceData.save();

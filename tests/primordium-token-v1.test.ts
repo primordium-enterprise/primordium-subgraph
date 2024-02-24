@@ -7,16 +7,59 @@ import {
   describe,
   test,
 } from "matchstick-as/assembly/index";
-import { createTransferEvent } from "./primordium-token-v1-utils";
+import {
+  createDelegateChangedEvent,
+  createTransferEvent,
+} from "./primordium-token-v1-utils";
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
-import { handleTransfer } from "../src/primordium-token-v1";
+import {
+  handleTransfer,
+  handleDelegateChanged,
+} from "../src/primordium-token-v1";
 import { GovernanceData, Member } from "../generated/schema";
-import { ADDRESS_ONE, ADDRESS_TWO } from "./test-utils";
-import { getGovernanceData } from "../src/utils";
+import { ADDRESS_ONE, ADDRESS_THREE, ADDRESS_TWO } from "./test-utils";
+import { getGovernanceData, getOrCreateMember } from "../src/utils";
+
+const delegator = Address.fromString(ADDRESS_ONE);
 
 describe("handleDelegateChanged()", () => {
-  test("Create de", () => {
-    log.info("test message", []);
+  test("delegate for first time", () => {
+    const fromDelegate = Address.zero();
+    const toDelegate = Address.fromString(ADDRESS_TWO);
+
+    let member = getOrCreateMember(delegator);
+    assert.assertTrue(!member.delegate); // null
+
+    handleDelegateChanged(
+      createDelegateChangedEvent(delegator, fromDelegate, toDelegate)
+    );
+
+    member = Member.load(delegator) as Member;
+    assert.assertTrue(!!member.delegate); // not null
+    assert.bytesEquals(member.delegate as Bytes, toDelegate);
+  });
+
+  test("delegate to self", () => {
+    handleDelegateChanged(
+      createDelegateChangedEvent(delegator, Address.fromString(ADDRESS_TWO), delegator)
+    );
+
+    let member = Member.load(delegator) as Member;
+    assert.bytesEquals(member.delegate as Bytes, delegator);
+  });
+
+  test("remove delegate", () => {
+    let member = Member.load(delegator) as Member;
+    handleDelegateChanged(
+      createDelegateChangedEvent(
+        delegator,
+        Address.fromBytes(member.delegate as Bytes),
+        Address.zero()
+      )
+    );
+
+    member = Member.load(delegator) as Member;
+    assert.assertTrue(!member.delegate); // null
   });
 });
 
@@ -28,7 +71,7 @@ describe("handleTransfer()", () => {
     clearStore();
   });
 
-  test("Create Member on mint", () => {
+  test("create Member on mint", () => {
     const mintEvent = createTransferEvent(Address.zero(), mintTo, mintAmount);
 
     handleTransfer(mintEvent);
@@ -45,13 +88,11 @@ describe("handleTransfer()", () => {
 
   describe("transfers and burns...", () => {
     beforeEach(() => {
-      handleTransfer(
-        createTransferEvent(Address.zero(), mintTo, mintAmount)
-      );
+      handleTransfer(createTransferEvent(Address.zero(), mintTo, mintAmount));
     });
     afterEach(clearStore);
 
-    test("Send from address 1 to address 2", () => {
+    test("send from address 1 to address 2", () => {
       const transferredTo = Address.fromString(ADDRESS_TWO);
       const transferredAmount = mintAmount.div(BigInt.fromI32(2));
       handleTransfer(
@@ -65,9 +106,12 @@ describe("handleTransfer()", () => {
       assert.assertNotNull(toMember);
       assert.addressEquals(transferredTo, Address.fromBytes(toMember.id));
       assert.bigIntEquals(toMember.tokenBalance, transferredAmount);
+
+      let governanceData: GovernanceData = getGovernanceData();
+      assert.bigIntEquals(governanceData.totalSupply, mintAmount);
     });
 
-    test("Burn some tokens", () => {
+    test("burn some tokens", () => {
       const burnAmount = mintAmount.div(BigInt.fromI32(2));
       handleTransfer(createTransferEvent(mintTo, Address.zero(), burnAmount));
 
@@ -75,10 +119,13 @@ describe("handleTransfer()", () => {
       assert.bigIntEquals(member.tokenBalance, mintAmount.minus(burnAmount));
 
       let governanceData: GovernanceData = getGovernanceData();
-      assert.bigIntEquals(governanceData.totalSupply, mintAmount.minus(burnAmount));
+      assert.bigIntEquals(
+        governanceData.totalSupply,
+        mintAmount.minus(burnAmount)
+      );
     });
 
-    test("Burn all tokens", () => {
+    test("burn all tokens", () => {
       handleTransfer(createTransferEvent(mintTo, Address.zero(), mintAmount));
 
       let member: Member = Member.load(mintTo) as Member;

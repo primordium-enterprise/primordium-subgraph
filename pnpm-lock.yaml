@@ -14,11 +14,14 @@ dependencies:
 
 devDependencies:
   matchstick-as:
-    specifier: 0.5.0
-    version: 0.5.0
+    specifier: 0.6.0
+    version: 0.6.0
   mustache:
     specifier: ^4.2.0
     version: 4.2.0
+  source-map-support:
+    specifier: ^0.5.21
+    version: 0.5.21
 
 packages:
 
@@ -263,12 +266,6 @@ packages:
       - typescript
       - utf-8-validate
     dev: false
-
-  /@graphprotocol/graph-ts@0.27.0:
-    resolution: {integrity: sha512-r1SPDIZVQiGMxcY8rhFSM0y7d/xAbQf5vHMWUf59js1KgoyWpM6P3tczZqmQd7JTmeyNsDGIPzd9FeaxllsU4w==}
-    dependencies:
-      assemblyscript: 0.19.10
-    dev: true
 
   /@graphprotocol/graph-ts@0.32.0:
     resolution: {integrity: sha512-YfKLT2w+ItXD/VPYQiAKtINQONVsAOkcqVFMHlhUy0fcEBVWuFBT53hJNI0/l5ujQa4TSxtzrKW/7EABAdgI8g==}
@@ -779,6 +776,7 @@ packages:
     dependencies:
       binaryen: 101.0.0-nightly.20210723
       long: 4.0.0
+    dev: false
 
   /assemblyscript@0.19.23:
     resolution: {integrity: sha512-fwOQNZVTMga5KRsfY80g7cpOl4PsFQczMwHzdtgoqLXaYhkhavufKb0sB0l3T1DUxpAufA0KNhlbpuuhZUwxMA==}
@@ -787,6 +785,7 @@ packages:
       binaryen: 102.0.0-nightly.20211028
       long: 5.2.3
       source-map-support: 0.5.21
+    dev: false
 
   /astral-regex@2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
@@ -847,10 +846,12 @@ packages:
   /binaryen@101.0.0-nightly.20210723:
     resolution: {integrity: sha512-eioJNqhHlkguVSbblHOtLqlhtC882SOEPKmNFZaDuz1hzQjolxZ+eu3/kaS10n3sGPONsIZsO7R9fR00UyhEUA==}
     hasBin: true
+    dev: false
 
   /binaryen@102.0.0-nightly.20211028:
     resolution: {integrity: sha512-GCJBVB5exbxzzvyt8MGDv/MeUjs6gkXDvf4xOIItRBptYl0Tz5sm1o/uG95YK0L0VeG5ajDu3hRtkBP2kzqC5w==}
     hasBin: true
+    dev: false
 
   /bl@1.2.3:
     resolution: {integrity: sha512-pvcNpa0UU69UT341rO6AYy4FVAIkUHuZXRIWbq+zHnsVcRzDDjIAhGuuYoi0d//cwIwtt4pkpKycWEfjdV+vww==}
@@ -2315,9 +2316,11 @@ packages:
 
   /long@4.0.0:
     resolution: {integrity: sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==}
+    dev: false
 
   /long@5.2.3:
     resolution: {integrity: sha512-lcHwpNoggQTObv5apGNCTdJrO69eHOZMi4BNC+rTLER8iHAqGrUVeLh/irVIM7zTw2bOXA8T6uNPeujwOLg/2Q==}
+    dev: false
 
   /lru-cache@10.2.0:
     resolution: {integrity: sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==}
@@ -2335,11 +2338,9 @@ packages:
     resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
     dev: false
 
-  /matchstick-as@0.5.0:
-    resolution: {integrity: sha512-4K619YDH+so129qt4RB4JCNxaFwJJYLXPc7drpG+/mIj86Cfzg6FKs/bA91cnajmS1CLHdhHl9vt6Kd6Oqvfkg==}
+  /matchstick-as@0.6.0:
+    resolution: {integrity: sha512-E36fWsC1AbCkBFt05VsDDRoFvGSdcZg6oZJrtIe/YDBbuFh8SKbR5FcoqDhNWqSN+F7bN/iS2u8Md0SM+4pUpw==}
     dependencies:
-      '@graphprotocol/graph-ts': 0.27.0
-      assemblyscript: 0.19.23
       wabt: 1.0.24
     dev: true
 

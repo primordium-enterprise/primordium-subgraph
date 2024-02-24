@@ -7,13 +7,31 @@ import {
 } from "../generated/PrimordiumTokenV1/PrimordiumTokenV1";
 import { Member, Delegate } from "../generated/schema";
 import { getGovernanceData, getOrCreateMember } from "./utils";
+import { log } from "matchstick-as";
 
 export function handleDelegateChanged(event: DelegateChangedEvent): void {
   let member = getOrCreateMember(event.params.delegator);
-  member.delegate =
-    event.params.toDelegate === Address.zero()
-      ? null
-      : changetype<Bytes>(event.params.toDelegate);
+
+  if (
+    event.params.fromDelegate.notEqual(
+      !!member.delegate ? member.delegate as Bytes : Address.zero()
+    )
+  ) {
+    log.warning(
+      "Current member 'delegate' field does not match the event 'fromDelegate' param.\ndelegate: {}\nfromDelegate: {}\nevent transaction hash: {}",
+      [
+        !!member.delegate ? (member.delegate as Bytes).toHex() : "null",
+        event.params.fromDelegate.toHex(),
+        event.transaction.hash.toHex(),
+      ]
+    );
+  }
+
+  // Set to new delegate (or null if address(0))
+  member.delegate = event.params.toDelegate.equals(Address.zero())
+    ? null
+    : changetype<Bytes>(event.params.toDelegate);
+
   member.save();
 }
 
