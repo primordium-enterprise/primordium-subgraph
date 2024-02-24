@@ -4,6 +4,8 @@ indexerHints:
   prune: never
 schema:
   file: ./schema.graphql
+features:
+  - fullTextSearch
 dataSources:
   - kind: ethereum
     name: PrimordiumGovernorV1

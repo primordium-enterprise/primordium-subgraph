@@ -39,6 +39,14 @@ type Delegate @entity {
   cancelerRoleExpiresAt: BigInt!
 }
 
+type _Schema_
+  @fulltext(
+    name: "proposalSearch"
+    language: en
+    algorithm: rank
+    include: [{ entity: "Proposal", fields: [{ name: "title" }, { name: "description" }]}]
+  )
+
 # Proposals created on the Governor proxy contract
 type Proposal @entity {
   # The proposal ID used to identifiy the proposal on-chain (an incrementing integer for PrimordiumDAO)
@@ -79,6 +87,8 @@ type Proposal @entity {
 
   # Inferred EIP-6372 CLOCK_MODE(), will be either "mode=blocknumber&from=default" or "mode=timestamp"
   clockMode: CLOCK_MODE!
+
+
 }
 
 type ProposalVote @entity {
