@@ -1,5 +1,16 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { Delegate, GovernanceData, Member, Proposal } from "../generated/schema";
+import {
+  Address,
+  BigInt,
+  ByteArray,
+  Bytes,
+  crypto,
+} from "@graphprotocol/graph-ts";
+import {
+  Delegate,
+  GovernanceData,
+  Member,
+  Proposal,
+} from "../generated/schema";
 
 /**
  * Extracts the title from a proposal markdown description. Looks for the first occurrence of a top-level heading to use
@@ -51,8 +62,8 @@ export function getOrCreateDelegate(address: Address): Delegate {
   if (delegate == null) {
     delegate = new Delegate(id);
     delegate.delegatedVotesBalance = BigInt.zero();
-    delegate.hasProposerRole = false;
-    delegate.hasCancelerRole = false;
+    delegate.proposerRoleExpiresAt = BigInt.zero();
+    delegate.cancelerRoleExpiresAt = BigInt.zero();
     delegate.save();
   }
 
@@ -88,3 +99,11 @@ export function getGovernanceData(): GovernanceData {
 
   return governanceData;
 }
+
+// Role hashes, set manually in accordance with PrimordiumGovernorV1 contract roles
+export const PROPOSER_ROLE: Bytes = Bytes.fromByteArray(
+  crypto.keccak256(ByteArray.fromUTF8("PROPOSER"))
+);
+export const CANCELER_ROLE: Bytes = Bytes.fromByteArray(
+  crypto.keccak256(ByteArray.fromUTF8("CANCELER"))
+);

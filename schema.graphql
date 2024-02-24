@@ -32,11 +32,11 @@ type Delegate @entity {
   # A list of Member entities that have delegated their votes to this Delegate
   membersRepresented: [Member!]! @derivedFrom(field: "delegate")
 
-  # True if this delegate has the "PROPOSER_ROLE()"
-  hasProposerRole: Boolean!
+  # Timestamp when the proposer role expires (or zero if not a proposer)
+  proposerRoleExpiresAt: BigInt!
 
-  # True if this delegate has the "CANCELER_ROLE()"
-  hasCancelerRole: Boolean!
+  # Timestamp when the canceler role expires (or zero if not a canceler)
+  cancelerRoleExpiresAt: BigInt!
 }
 
 # Proposals created on the Governor proxy contract

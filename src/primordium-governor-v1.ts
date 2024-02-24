@@ -1,4 +1,4 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   ProposalCanceled,
   ProposalCreated,
@@ -10,7 +10,7 @@ import {
   VoteCast,
   VoteCastWithParams,
 } from "../generated/PrimordiumGovernorV1/PrimordiumGovernorV1";
-import { extractTitleFromDescription, getOrCreateProposal } from "./utils";
+import { CANCELER_ROLE, PROPOSER_ROLE, extractTitleFromDescription, getOrCreateDelegate, getOrCreateProposal } from "./utils";
 
 export function handleProposalCanceled(event: ProposalCanceled): void {}
 
@@ -47,9 +47,27 @@ export function handleProposalExecuted(event: ProposalExecuted): void {}
 
 export function handleProposalQueued(event: ProposalQueued): void {}
 
-export function handleRoleGranted(event: RoleGranted): void {}
+export function handleRoleGranted(event: RoleGranted): void {
+  let delegate = getOrCreateDelegate(event.params.account);
+  if (event.params.role.equals(PROPOSER_ROLE)) {
+    delegate.proposerRoleExpiresAt = event.params.expiresAt;
+    delegate.save();
+  } else if (event.params.role.equals(CANCELER_ROLE)) {
+    delegate.cancelerRoleExpiresAt = event.params.expiresAt;
+    delegate.save();
+  }
+}
 
-export function handleRoleRevoked(event: RoleRevoked): void {}
+export function handleRoleRevoked(event: RoleRevoked): void {
+  let delegate = getOrCreateDelegate(event.params.account);
+  if (event.params.role.equals(PROPOSER_ROLE)) {
+    delegate.proposerRoleExpiresAt = BigInt.zero();
+    delegate.save();
+  } else if (event.params.role.equals(CANCELER_ROLE)) {
+    delegate.cancelerRoleExpiresAt = BigInt.zero();
+    delegate.save();
+  }
+}
 
 export function handleVoteCast(event: VoteCast): void {}
 
