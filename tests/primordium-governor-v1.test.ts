@@ -11,11 +11,13 @@ import {
 import { ADDRESS_1, ADDRESS_2 } from "./test-utils";
 import {
   handleProposalCreated,
+  handleProposalDeadlineExtended,
   handleRoleGranted,
   handleRoleRevoked,
 } from "../src/primordium-governor-v1";
 import {
   createProposalCreatedEvent,
+  createProposalDeadlineExtendedEvent,
   createRoleGrantedEvent,
   createRoleRevokedEvent,
 } from "./primordium-governor-v1-utils";
@@ -23,7 +25,9 @@ import {
   CANCELER_ROLE,
   PROPOSER_ROLE,
   extractTitleFromDescription,
+  getGovernanceData,
   getOrCreateDelegate,
+  getOrCreateProposal,
 } from "../src/utils";
 import { Delegate, Proposal } from "../generated/schema";
 
@@ -81,6 +85,7 @@ const calldatas = [Bytes.fromUTF8("This is random calldata for testing")];
 const signatures = ["randomSignature(uint256)"];
 const voteStart = BigInt.fromI32(5);
 const voteEnd = BigInt.fromI32(10);
+const extendedVoteEnd = voteEnd.plus(BigInt.fromI32(5));
 const description = "# Test Proposal\nThis is just a test description.";
 
 function getTestProposal(): Proposal {
@@ -95,7 +100,8 @@ describe("Proposals...", () => {
     delegate.save();
   });
 
-  test("proposal created", () => {
+  test("handleProposalCreated()", () => {
+    const governanceData = getGovernanceData();
     const proposalCreatedEvent = createProposalCreatedEvent(
         proposalNumber,
         proposer,
@@ -116,6 +122,7 @@ describe("Proposals...", () => {
 
     let proposal = getTestProposal();
     assert.assertNotNull(proposal);
+    assert.bigIntEquals(proposalNumber, BigInt.fromByteArray(proposal.id));
     assert.addressEquals(proposer, Address.fromBytes(proposal.proposer));
     assert.booleanEquals(true, proposal.isProposerRole);
     for (let i = 0; i < targets.length; i++) {
@@ -130,9 +137,22 @@ describe("Proposals...", () => {
     assert.stringEquals(description, proposal.description);
     assert.bigIntEquals(voteStart, proposal.voteStart);
     assert.bigIntEquals(voteEnd, proposal.voteEnd);
+    assert.bigIntEquals(voteEnd, proposal.originalVoteEnd);
     assert.stringEquals("blocknumber", proposal.clockMode);
     assert.stringEquals("Pending", proposal.state);
     assert.bigIntEquals(BigInt.zero(), proposal.forVotes);
     assert.bigIntEquals(BigInt.zero(), proposal.againstVotes);
+
+    let updatedGovernanceData = getGovernanceData();
+    assert.bigIntEquals(governanceData.proposalCount.plus(BigInt.fromI32(1)), updatedGovernanceData.proposalCount);
+  });
+
+  test("handleProposalDeadlineExtended()", () => {
+    const proposalDeadlineExtendedEvent = createProposalDeadlineExtendedEvent(proposalNumber, extendedVoteEnd);
+    handleProposalDeadlineExtended(proposalDeadlineExtendedEvent);
+
+    let proposal = getOrCreateProposal(proposalNumber);
+    assert.bigIntEquals(extendedVoteEnd, proposal.voteEnd);
+    assert.bigIntEquals(voteEnd, proposal.originalVoteEnd);
   });
 });

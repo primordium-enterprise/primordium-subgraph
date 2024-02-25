@@ -107,6 +107,9 @@ type Proposal @entity {
   # Proposal voting ends
   voteEnd: BigInt!
 
+  # The unextended vote end
+  originalVoteEnd: BigInt!
+
   # Inferred EIP-6372 CLOCK_MODE(), will be either "mode=blocknumber&from=default" or "mode=timestamp"
   clockMode: ClockMode!
 
@@ -154,4 +157,7 @@ type GovernanceData @entity {
 
   # The total MUSHI supply
   totalSupply: BigInt!
+
+  # Total amount of created proposals
+  proposalCount: BigInt!
 }

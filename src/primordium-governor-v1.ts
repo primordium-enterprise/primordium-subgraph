@@ -10,10 +10,8 @@ import {
   VoteCast,
   VoteCastWithParams,
 } from "../generated/PrimordiumGovernorV1/PrimordiumGovernorV1";
-import { CANCELER_ROLE, PROPOSER_ROLE, extractTitleFromDescription, getCurrentClock, getOrCreateDelegate, getOrCreateProposal } from "./utils";
+import { CANCELER_ROLE, PROPOSER_ROLE, extractTitleFromDescription, getCurrentClock, getGovernanceData, getOrCreateDelegate, getOrCreateProposal } from "./utils";
 import { Delegate } from "../generated/schema";
-
-export function handleProposalCanceled(event: ProposalCanceled): void {}
 
 export function handleProposalCreated(event: ProposalCreated): void {
   let proposal = getOrCreateProposal(event.params.proposalId);
@@ -32,6 +30,7 @@ export function handleProposalCreated(event: ProposalCreated): void {
   proposal.description = event.params.description;
   proposal.voteStart = event.params.voteStart;
   proposal.voteEnd = event.params.voteEnd;
+  proposal.originalVoteEnd = event.params.voteEnd;
 
   // Infer "blocknumber" or "timestamp" mode based on the event voteStart value
   if (event.params.voteStart >= event.block.timestamp) {
@@ -51,15 +50,25 @@ export function handleProposalCreated(event: ProposalCreated): void {
   proposal.againstVotes = BigInt.zero();
 
   proposal.save();
+
+  let governanceData = getGovernanceData();
+  governanceData.proposalCount = governanceData.proposalCount.plus(BigInt.fromI32(1));
+  governanceData.save();
 }
 
 export function handleProposalDeadlineExtended(
   event: ProposalDeadlineExtended
-): void {}
+): void {
+  let proposal = getOrCreateProposal(event.params.proposalId);
+  proposal.voteEnd = event.params.extendedDeadline;
+  proposal.save();
+}
+
+export function handleProposalQueued(event: ProposalQueued): void {}
 
 export function handleProposalExecuted(event: ProposalExecuted): void {}
 
-export function handleProposalQueued(event: ProposalQueued): void {}
+export function handleProposalCanceled(event: ProposalCanceled): void {}
 
 export function handleRoleGranted(event: RoleGranted): void {
   let delegate = getOrCreateDelegate(event.params.account);
