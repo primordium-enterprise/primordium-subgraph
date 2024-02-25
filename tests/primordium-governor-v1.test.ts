@@ -5,6 +5,7 @@ import {
   beforeEach,
   clearStore,
   describe,
+  log,
   test,
 } from "matchstick-as";
 import { ADDRESS_1, ADDRESS_2 } from "./test-utils";
@@ -130,5 +131,8 @@ describe("Proposals...", () => {
     assert.bigIntEquals(voteStart, proposal.voteStart);
     assert.bigIntEquals(voteEnd, proposal.voteEnd);
     assert.stringEquals("blocknumber", proposal.clockMode);
+    assert.stringEquals("Pending", proposal.state);
+    assert.bigIntEquals(BigInt.zero(), proposal.forVotes);
+    assert.bigIntEquals(BigInt.zero(), proposal.againstVotes);
   });
 });

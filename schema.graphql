@@ -1,4 +1,4 @@
-enum CLOCK_MODE {
+enum ClockMode {
   blocknumber
   timestamp
 }
@@ -44,8 +44,24 @@ type _Schema_
     name: "proposalSearch"
     language: en
     algorithm: rank
-    include: [{ entity: "Proposal", fields: [{ name: "title" }, { name: "description" }]}]
+    include: [
+      {
+        entity: "Proposal"
+        fields: [{ name: "title" }, { name: "description" }]
+      }
+    ]
   )
+
+enum ProposalState {
+  Pending
+  Active
+  Canceled
+  Defeated
+  Succeeded
+  Queued
+  Expired
+  Executed
+}
 
 # Proposals created on the Governor proxy contract
 type Proposal @entity {
@@ -76,6 +92,9 @@ type Proposal @entity {
   # Proposal creation timestamp
   createdAtTimestamp: BigInt!
 
+  # Hash of the transaction creating this proposal
+  createdTransactionHash: Bytes!
+
   # Proposal title (from the description)
   title: String!
 
@@ -89,9 +108,37 @@ type Proposal @entity {
   voteEnd: BigInt!
 
   # Inferred EIP-6372 CLOCK_MODE(), will be either "mode=blocknumber&from=default" or "mode=timestamp"
-  clockMode: CLOCK_MODE!
+  clockMode: ClockMode!
 
+  # The proposal state
+  state: ProposalState!
 
+  # Vote count in support of the proposal
+  forVotes: BigInt!
+
+  # Vote count against the proposal
+  againstVotes: BigInt!
+
+  # Block when canceled
+  canceledAtBlock: BigInt
+
+  # Timestamp when canceled
+  canceledAtTimestamp: BigInt
+
+  # Block when queued
+  queuedAtBlock: BigInt
+
+  # Timestamp when queued
+  queuedAtTimestamp: BigInt
+
+  # Block when executed
+  executedAtBlock: BigInt
+
+  # Timestamp when executed
+  executedAtTimestamp: BigInt
+
+  # Timestamp when the proposal will be executable after being queued
+  eta: BigInt
 }
 
 type ProposalVote @entity {

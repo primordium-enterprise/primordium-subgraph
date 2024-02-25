@@ -10,7 +10,7 @@ import {
   VoteCast,
   VoteCastWithParams,
 } from "../generated/PrimordiumGovernorV1/PrimordiumGovernorV1";
-import { CANCELER_ROLE, PROPOSER_ROLE, extractTitleFromDescription, getOrCreateDelegate, getOrCreateProposal } from "./utils";
+import { CANCELER_ROLE, PROPOSER_ROLE, extractTitleFromDescription, getCurrentClock, getOrCreateDelegate, getOrCreateProposal } from "./utils";
 import { Delegate } from "../generated/schema";
 
 export function handleProposalCanceled(event: ProposalCanceled): void {}
@@ -27,6 +27,7 @@ export function handleProposalCreated(event: ProposalCreated): void {
   proposal.signatures = event.params.signatures;
   proposal.createdAtBlock = event.block.number;
   proposal.createdAtTimestamp = event.block.timestamp;
+  proposal.createdTransactionHash = event.transaction.hash;
   proposal.title = extractTitleFromDescription(event.params.description);
   proposal.description = event.params.description;
   proposal.voteStart = event.params.voteStart;
@@ -38,6 +39,16 @@ export function handleProposalCreated(event: ProposalCreated): void {
   } else {
     proposal.clockMode = "blocknumber";
   }
+
+  const currentClock = getCurrentClock(event, proposal.clockMode);
+  if (currentClock < proposal.voteStart) {
+    proposal.state = "Pending";
+  } else {
+    proposal.state = "Active";
+  }
+
+  proposal.forVotes = BigInt.zero();
+  proposal.againstVotes = BigInt.zero();
 
   proposal.save();
 }

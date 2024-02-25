@@ -4,6 +4,7 @@ import {
   ByteArray,
   Bytes,
   crypto,
+  ethereum,
 } from "@graphprotocol/graph-ts";
 import {
   Delegate,
@@ -75,7 +76,9 @@ export function getOrCreateDelegate(address: Address): Delegate {
  */
 export function getOrCreateProposal<T>(id: T): Proposal {
   let _id: Bytes =
-    id instanceof BigInt ? Bytes.fromByteArray(ByteArray.fromBigInt(id)) : (id as Bytes);
+    id instanceof BigInt
+      ? Bytes.fromByteArray(ByteArray.fromBigInt(id))
+      : (id as Bytes);
 
   let proposal = Proposal.load(_id);
 
@@ -84,6 +87,14 @@ export function getOrCreateProposal<T>(id: T): Proposal {
   }
 
   return proposal;
+}
+
+export function getCurrentClock(event: ethereum.Event, clockMode: string): BigInt {
+  if (clockMode == "timestamp") {
+    return event.block.timestamp;
+  } else {
+    return event.block.number;
+  }
 }
 
 export const GOVERNANCE_DATA_ID: Bytes = Bytes.fromUTF8("GOVERNANCE_DATA");
