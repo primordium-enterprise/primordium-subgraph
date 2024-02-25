@@ -11,6 +11,7 @@ import {
   GovernanceData,
   Member,
   Proposal,
+  ProposalVote,
 } from "../generated/schema";
 
 /**
@@ -95,6 +96,18 @@ export function getCurrentClock(event: ethereum.Event, clockMode: string): BigIn
   } else {
     return event.block.number;
   }
+}
+
+export function getOrCreateProposalVote(delegateId: Bytes, proposalId: BigInt): ProposalVote {
+  let id: Bytes = delegateId.concat(Bytes.fromByteArray(ByteArray.fromBigInt(proposalId)));
+
+  let proposalVote = ProposalVote.load(id);
+
+  if (proposalVote == null) {
+    proposalVote = new ProposalVote(id);
+  }
+
+  return proposalVote;
 }
 
 export const GOVERNANCE_DATA_ID: Bytes = Bytes.fromUTF8("GOVERNANCE_DATA");

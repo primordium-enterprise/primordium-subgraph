@@ -53,14 +53,14 @@ type _Schema_
   )
 
 enum ProposalState {
-  Pending
-  Active
-  Canceled
-  Defeated
-  Succeeded
-  Queued
-  Expired
-  Executed
+  PENDING
+  ACTIVE
+  CANCELED
+  DEFEATED
+  SUCCEEDED
+  QUEUED
+  EXPIRED
+  EXECUTED
 }
 
 # Proposals created on the Governor proxy contract
@@ -113,7 +113,7 @@ type Proposal @entity {
   # Inferred EIP-6372 CLOCK_MODE(), will be either "mode=blocknumber&from=default" or "mode=timestamp"
   clockMode: ClockMode!
 
-  # The proposal state
+  # The proposal state (not updated from `PENDING` to `ACTIVE` until the first vote is cast)
   state: ProposalState!
 
   # Vote count in support of the proposal
@@ -121,6 +121,9 @@ type Proposal @entity {
 
   # Vote count against the proposal
   againstVotes: BigInt!
+
+  # Vote count abstaining from the proposal
+  abstainVotes: BigInt!
 
   # Block when canceled
   canceledAtBlock: BigInt
@@ -148,8 +151,32 @@ type ProposalVote @entity {
   # The concatenation of the Delegate.id and the Proposal.id
   id: Bytes!
 
+  # The proposal this vote is for
+  proposal: Proposal!
+
   # The delegate that cast this proposal vote
   delegate: Delegate!
+
+  # The vote weight (the amount of votes delegated to this delegate in this vote)
+  weight: BigInt!
+
+  # The support value: against (0), for (1), or abstain (2)
+  support: Int!
+
+  # True if the support value is for (1)
+  isForProposal: Boolean!
+
+  # An explanation of the support (if provided)
+  reason: String
+
+  # Additional bytes params (if provided)
+  params: Bytes
+
+  # The block number when this vote was cast
+  blockNumber: BigInt!
+
+  # The block timestamp when this vote was cast
+  blockTimestamp: BigInt!
 }
 
 type GovernanceData @entity {
