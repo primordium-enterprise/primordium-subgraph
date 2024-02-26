@@ -73,13 +73,31 @@ export function getOrCreateDelegate(address: Address): Delegate {
 }
 
 /**
+ * Formats the BigInt proposalId into a Bytes value (formatted as a 32 byte array in big-endian order).
+ */
+export function formatProposalId(proposalId: BigInt): Bytes {
+  let formattedProposalId = new Bytes(32);
+  let iterationCount = Math.min(proposalId.byteLength, 32);
+  for (let i = 0; i < iterationCount; i++) {
+    formattedProposalId[31 - i] = proposalId[i];
+  }
+  return formattedProposalId;
+}
+
+/**
+ * Converts the formatted 32 byte big-endian proposalId back into a native BigInt value.
+ */
+export function unformatProposalId(proposalId: Bytes): BigInt {
+  // Formatted proposalId is big-endian, so need to reverse before converting to BigInt
+  return BigInt.fromByteArray(changetype<ByteArray>(proposalId.reverse()));
+}
+
+/**
  * Gets a proposal by ID. Creates one if none exists. Can pass a BigInt or Bytes value to the ID.
  */
 export function getOrCreateProposal<T>(id: T): Proposal {
   let _id: Bytes =
-    id instanceof BigInt
-      ? Bytes.fromByteArray(ByteArray.fromBigInt(id))
-      : (id as Bytes);
+    id instanceof BigInt ? formatProposalId(id) : (id as Bytes);
 
   let proposal = Proposal.load(_id);
 
@@ -90,7 +108,10 @@ export function getOrCreateProposal<T>(id: T): Proposal {
   return proposal;
 }
 
-export function getCurrentClock(event: ethereum.Event, clockMode: string): BigInt {
+export function getCurrentClock(
+  event: ethereum.Event,
+  clockMode: string
+): BigInt {
   if (clockMode == "timestamp") {
     return event.block.timestamp;
   } else {
@@ -98,8 +119,13 @@ export function getCurrentClock(event: ethereum.Event, clockMode: string): BigIn
   }
 }
 
-export function getOrCreateProposalVote(delegateId: Bytes, proposalId: BigInt): ProposalVote {
-  let id: Bytes = delegateId.concat(Bytes.fromByteArray(ByteArray.fromBigInt(proposalId)));
+export function getOrCreateProposalVote(
+  delegateId: Bytes,
+  proposalId: BigInt
+): ProposalVote {
+  let id: Bytes = delegateId.concat(
+    Bytes.fromByteArray(ByteArray.fromBigInt(proposalId))
+  );
 
   let proposalVote = ProposalVote.load(id);
 

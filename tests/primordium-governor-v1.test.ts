@@ -27,13 +27,15 @@ import {
   CANCELER_ROLE,
   PROPOSER_ROLE,
   extractTitleFromDescription,
+  formatProposalId,
+  unformatProposalId,
   getGovernanceData,
   getOrCreateDelegate,
   getOrCreateProposal,
   getOrCreateProposalVote,
 } from "../src/utils";
 import { Delegate, Proposal } from "../generated/schema";
-import { PROPOSAL_STATE_PENDING } from "../src/constants";
+import { PROPOSAL_STATE_ACTIVE, PROPOSAL_STATE_PENDING } from "../src/constants";
 
 const account = Address.fromString(ADDRESS_1);
 const expiresAt = BigInt.fromI32(2);
@@ -93,9 +95,7 @@ const extendedVoteEnd = voteEnd.plus(BigInt.fromI32(5));
 const description = "# Test Proposal\nThis is just a test description.";
 
 function getTestProposal(): Proposal {
-  return Proposal.load(
-    Bytes.fromByteArray(ByteArray.fromBigInt(proposalNumber))
-  ) as Proposal;
+  return Proposal.load(formatProposalId(proposalNumber)) as Proposal;
 }
 
 describe("Proposals...", () => {
@@ -126,7 +126,7 @@ describe("Proposals...", () => {
 
     let proposal = getTestProposal();
     assert.assertNotNull(proposal);
-    assert.bigIntEquals(proposalNumber, BigInt.fromByteArray(proposal.id));
+    assert.bigIntEquals(proposalNumber, unformatProposalId(proposal.id));
     assert.addressEquals(proposer, Address.fromBytes(proposal.proposer));
     assert.booleanEquals(true, proposal.isProposerRole);
     for (let i = 0; i < targets.length; i++) {
@@ -183,10 +183,6 @@ describe("Proposals...", () => {
         Bytes.fromByteArray(ByteArray.fromBigInt(proposalNumber)),
         proposalVote.proposal
       );
-      log.info("{}", [proposalVote.id.toHex()]);
-      log.info("{}", [Bytes.fromByteArray(ByteArray.fromBigInt(proposalNumber)).toHex()]);
-      log.info("{}", [BigInt.fromByteArray(Bytes.fromByteArray(ByteArray.fromBigInt(proposalNumber))).toString()])
-      log.info("{}", [proposalNumber.toHex()]);
       assert.bytesEquals(voter, proposalVote.delegate);
       assert.bigIntEquals(weight, proposalVote.weight);
       assert.i32Equals(0, proposalVote.support);
@@ -198,6 +194,12 @@ describe("Proposals...", () => {
         voteCastEvent.block.timestamp,
         proposalVote.blockTimestamp
       );
+
+      let proposal = getTestProposal();
+      assert.stringEquals(PROPOSAL_STATE_ACTIVE, proposal.state);
+      assert.bigIntEquals(weight, proposal.againstVotes);
+      assert.bigIntEquals(BigInt.zero(), proposal.forVotes);
+      assert.bigIntEquals(BigInt.zero(), proposal.abstainVotes);
     });
   });
 
