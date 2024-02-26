@@ -24,7 +24,7 @@ dataSources:
         - name: PrimordiumGovernorV1
           file: ./abis/PrimordiumGovernorV1.json
       eventHandlers:
-        - event: ProposalCanceled(indexed uint256)
+        - event: ProposalCanceled(indexed uint256,indexed address)
           handler: handleProposalCanceled
         - event: ProposalCreated(indexed uint256,indexed address,address[],uint256[],bytes[],string[],uint256,uint256,string)
           handler: handleProposalCreated
@@ -70,4 +70,6 @@ dataSources:
           handler: handleSnapshotCreated
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+        - event: MaxSupplyChange(uint256,uint256)
+          handler: handleMaxSupplyChange
       file: ./src/primordium-token-v1.ts

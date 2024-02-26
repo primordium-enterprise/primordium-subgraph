@@ -10,6 +10,7 @@ import {
 import {
   createDelegateChangedEvent,
   createDelegateVotesChangedEvent,
+  createMaxSupplyChangeEvent,
   createTransferEvent,
 } from "./primordium-token-v1-utils";
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
@@ -17,6 +18,7 @@ import {
   handleTransfer,
   handleDelegateChanged,
   handleDelegateVotesChanged,
+  handleMaxSupplyChange,
 } from "../src/primordium-token-v1";
 import { Delegate, GovernanceData, Member } from "../generated/schema";
 import { ADDRESS_1, ADDRESS_2 } from "./test-utils";
@@ -152,4 +154,12 @@ describe("handleTransfer()", () => {
       assert.bigIntEquals(governanceData.totalSupply, BigInt.zero());
     });
   });
+});
+
+test("handleMaxSupplyChange()", () => {
+  const event = createMaxSupplyChangeEvent(BigInt.fromI32(0), BigInt.fromI32(100));
+  handleMaxSupplyChange(event);
+
+  let governanceData = getGovernanceData();
+  assert.bigIntEquals(event.params.newMaxSupply, governanceData.maxSupply);
 });

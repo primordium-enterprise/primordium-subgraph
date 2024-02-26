@@ -8,18 +8,30 @@ import {
   log,
   test,
 } from "matchstick-as";
-import { ADDRESS_1, ADDRESS_2, address1, address2, address3 } from "./test-utils";
 import {
+  ADDRESS_1,
+  ADDRESS_2,
+  address1,
+  address2,
+  address3,
+} from "./test-utils";
+import {
+    handleProposalCanceled,
   handleProposalCreated,
   handleProposalDeadlineExtended,
+  handleProposalExecuted,
+  handleProposalQueued,
   handleRoleGranted,
   handleRoleRevoked,
   handleVoteCast,
   handleVoteCastWithParams,
 } from "../src/primordium-governor-v1";
 import {
+    createProposalCanceledEvent,
   createProposalCreatedEvent,
   createProposalDeadlineExtendedEvent,
+  createProposalExecutedEvent,
+  createProposalQueuedEvent,
   createRoleGrantedEvent,
   createRoleRevokedEvent,
   createVoteCastEvent,
@@ -39,7 +51,10 @@ import {
 import { Delegate, Proposal } from "../generated/schema";
 import {
   PROPOSAL_STATE_ACTIVE,
+  PROPOSAL_STATE_CANCELED,
+  PROPOSAL_STATE_EXECUTED,
   PROPOSAL_STATE_PENDING,
+  PROPOSAL_STATE_QUEUED,
 } from "../src/constants";
 
 const account = Address.fromString(ADDRESS_1);
@@ -183,7 +198,10 @@ describe("Proposals...", () => {
       );
       handleVoteCast(event);
 
-      let proposalVote = getOrCreateProposalVote(proposalNumber, event.params.voter);
+      let proposalVote = getOrCreateProposalVote(
+        proposalNumber,
+        event.params.voter
+      );
       assert.bytesEquals(
         formatProposalId(proposalNumber),
         proposalVote.proposal
@@ -215,8 +233,14 @@ describe("Proposals...", () => {
       );
       handleVoteCastWithParams(event);
 
-      let proposalVote = getOrCreateProposalVote(proposalNumber, event.params.voter);
-      assert.bytesEquals(formatProposalId(proposalNumber), proposalVote.proposal);
+      let proposalVote = getOrCreateProposalVote(
+        proposalNumber,
+        event.params.voter
+      );
+      assert.bytesEquals(
+        formatProposalId(proposalNumber),
+        proposalVote.proposal
+      );
       assert.bytesEquals(event.params.voter, proposalVote.delegate);
       assert.bigIntEquals(event.params.weight, proposalVote.weight);
       assert.i32Equals(1, proposalVote.support);
@@ -234,33 +258,39 @@ describe("Proposals...", () => {
     });
 
     test("cast vote (abstain)", () => {
-        const event = createVoteCastWithParamsEvent(
-          address3,
-          proposalNumber,
-          2,
-          abstainVotesWeight,
-          "i could go either way",
-          new Bytes(0)
-        );
-        handleVoteCastWithParams(event);
+      const event = createVoteCastWithParamsEvent(
+        address3,
+        proposalNumber,
+        2,
+        abstainVotesWeight,
+        "i could go either way",
+        new Bytes(0)
+      );
+      handleVoteCastWithParams(event);
 
-        let proposalVote = getOrCreateProposalVote(proposalNumber, event.params.voter);
-        assert.bytesEquals(formatProposalId(proposalNumber), proposalVote.proposal);
-        assert.bytesEquals(event.params.voter, proposalVote.delegate);
-        assert.bigIntEquals(event.params.weight, proposalVote.weight);
-        assert.i32Equals(2, proposalVote.support);
-        assert.booleanEquals(false, proposalVote.isForProposal);
-        assert.stringEquals(event.params.reason, proposalVote.reason as string);
-        assert.assertTrue(!proposalVote.params); // Params should be null for zero-length Bytes
-        assert.bigIntEquals(event.block.number, proposalVote.blockNumber);
-        assert.bigIntEquals(event.block.timestamp, proposalVote.blockTimestamp);
+      let proposalVote = getOrCreateProposalVote(
+        proposalNumber,
+        event.params.voter
+      );
+      assert.bytesEquals(
+        formatProposalId(proposalNumber),
+        proposalVote.proposal
+      );
+      assert.bytesEquals(event.params.voter, proposalVote.delegate);
+      assert.bigIntEquals(event.params.weight, proposalVote.weight);
+      assert.i32Equals(2, proposalVote.support);
+      assert.booleanEquals(false, proposalVote.isForProposal);
+      assert.stringEquals(event.params.reason, proposalVote.reason as string);
+      assert.assertTrue(!proposalVote.params); // Params should be null for zero-length Bytes
+      assert.bigIntEquals(event.block.number, proposalVote.blockNumber);
+      assert.bigIntEquals(event.block.timestamp, proposalVote.blockTimestamp);
 
-        let proposal = getTestProposal();
-        assert.stringEquals(PROPOSAL_STATE_ACTIVE, proposal.state);
-        assert.bigIntEquals(againstVotesWeight, proposal.againstVotes);
-        assert.bigIntEquals(forVotesWeight, proposal.forVotes);
-        assert.bigIntEquals(abstainVotesWeight, proposal.abstainVotes);
-      });
+      let proposal = getTestProposal();
+      assert.stringEquals(PROPOSAL_STATE_ACTIVE, proposal.state);
+      assert.bigIntEquals(againstVotesWeight, proposal.againstVotes);
+      assert.bigIntEquals(forVotesWeight, proposal.forVotes);
+      assert.bigIntEquals(abstainVotesWeight, proposal.abstainVotes);
+    });
   });
 
   test("handleProposalDeadlineExtended()", () => {
@@ -274,4 +304,45 @@ describe("Proposals...", () => {
     assert.bigIntEquals(extendedVoteEnd, proposal.voteEnd);
     assert.bigIntEquals(voteEnd, proposal.originalVoteEnd);
   });
+
+  test("handleProposalQueued()", () => {
+    const event = createProposalQueuedEvent(
+      proposalNumber,
+      BigInt.fromI32(1000)
+    );
+    handleProposalQueued(event);
+
+    let proposal = getTestProposal();
+    assert.stringEquals(PROPOSAL_STATE_QUEUED, proposal.state);
+    assert.bigIntEquals(event.params.eta, proposal.eta as BigInt);
+    assert.bigIntEquals(event.block.number, proposal.queuedAtBlock as BigInt);
+    assert.bigIntEquals(
+      event.block.timestamp,
+      proposal.queuedAtTimestamp as BigInt
+    );
+  });
+
+  test("handleProposalExecuted()", () => {
+    const event = createProposalExecutedEvent(proposalNumber);
+    handleProposalExecuted(event);
+
+    let proposal = getTestProposal();
+    assert.stringEquals(PROPOSAL_STATE_EXECUTED, proposal.state);
+    assert.bigIntEquals(event.block.number, proposal.executedAtBlock as BigInt);
+    assert.bigIntEquals(event.block.timestamp, proposal.executedAtTimestamp as BigInt);
+    assert.bytesEquals(event.transaction.hash, proposal.executedTransactionHash as Bytes);
+  });
+
+  test("handleProposalCanceled()", () => {
+    handleRoleGranted(createRoleGrantedEvent(CANCELER_ROLE, address3, BigInt.fromI32(10000000)));
+    const event = createProposalCanceledEvent(proposalNumber, address3);
+    handleProposalCanceled(event);
+
+    let proposal = getTestProposal();
+    assert.stringEquals(PROPOSAL_STATE_CANCELED, proposal.state);
+    assert.bigIntEquals(event.block.number, proposal.canceledAtBlock as BigInt);
+    assert.bigIntEquals(event.block.timestamp, proposal.canceledAtTimestamp as BigInt);
+    assert.addressEquals(event.params.canceler, Address.fromBytes(proposal.canceler as Bytes));
+    assert.booleanEquals(true, proposal.isCancelerRole);
+  })
 });

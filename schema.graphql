@@ -125,6 +125,12 @@ type Proposal @entity {
   # Vote count abstaining from the proposal
   abstainVotes: BigInt!
 
+  # Sender that canceled the proposal (if canceled)
+  canceler: Delegate
+
+  # True if the canceler had the "CANCELER_ROLE()"
+  isCancelerRole: Boolean
+
   # Block when canceled
   canceledAtBlock: BigInt
 
@@ -142,6 +148,9 @@ type Proposal @entity {
 
   # Timestamp when executed
   executedAtTimestamp: BigInt
+
+  # Transaction hash when this proposal was executed
+  executedTransactionHash: Bytes
 
   # Timestamp when the proposal will be executable after being queued
   eta: BigInt
@@ -185,6 +194,11 @@ type GovernanceData @entity {
   # The total MUSHI supply
   totalSupply: BigInt!
 
+  # The max MUSHI supply (is updateable by the PrimordiumDAO executor)
+  maxSupply: BigInt!
+
   # Total amount of created proposals
   proposalCount: BigInt!
+
+
 }

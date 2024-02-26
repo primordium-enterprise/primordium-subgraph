@@ -2,6 +2,7 @@ import { Address, Bytes } from "@graphprotocol/graph-ts";
 import {
   DelegateChanged as DelegateChangedEvent,
   DelegateVotesChanged as DelegateVotesChangedEvent,
+  MaxSupplyChange as MaxSupplyChangeEvent,
   SnapshotCreated as SnapshotCreatedEvent,
   Transfer as TransferEvent,
 } from "../generated/PrimordiumTokenV1/PrimordiumTokenV1";
@@ -86,4 +87,17 @@ export function handleTransfer(event: TransferEvent): void {
     toMember.tokenBalance = toMember.tokenBalance.plus(event.params.value);
     toMember.save();
   }
+}
+
+export function handleMaxSupplyChange(event: MaxSupplyChangeEvent): void {
+  let governanceData = getGovernanceData();
+  if (governanceData.maxSupply.notEqual(event.params.oldMaxSupply)) {
+    log.warning(
+      "Max supply changed, but old max supply does not match the event." +
+        "\noldMaxSupply: {},\noldMaxSupply (event): {}",
+      [governanceData.maxSupply.toHex(), event.params.oldMaxSupply.toHex()]
+    );
+  }
+  governanceData.maxSupply = event.params.newMaxSupply;
+  governanceData.save();
 }

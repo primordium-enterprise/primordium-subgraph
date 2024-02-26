@@ -142,6 +142,7 @@ export function getGovernanceData(): GovernanceData {
   if (governanceData == null) {
     governanceData = new GovernanceData(GOVERNANCE_DATA_ID);
     governanceData.totalSupply = BigInt.zero();
+    governanceData.maxSupply = BigInt.zero();
     governanceData.proposalCount = BigInt.zero();
     governanceData.save();
   }

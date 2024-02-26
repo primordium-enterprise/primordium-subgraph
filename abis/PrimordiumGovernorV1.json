@@ -423,6 +423,12 @@
         "internalType": "uint256",
         "name": "proposalId",
         "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "canceler",
+        "type": "address"
       }
     ],
     "name": "ProposalCanceled",
@@ -594,7 +600,7 @@
         "type": "uint256"
       }
     ],
-    "name": "QuorumBpsUpdate",
+    "name": "QuorumBPSUpdate",
     "type": "event"
   },
   {

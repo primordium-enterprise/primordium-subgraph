@@ -12,7 +12,7 @@ import {
 } from "../generated/PrimordiumGovernorV1/PrimordiumGovernorV1";
 import { CANCELER_ROLE, PROPOSER_ROLE, extractTitleFromDescription, getCurrentClock, getGovernanceData, getOrCreateDelegate, getOrCreateProposal, getOrCreateProposalVote } from "./utils";
 import { Delegate } from "../generated/schema";
-import { PROPOSAL_STATE_ACTIVE, PROPOSAL_STATE_PENDING } from "./constants";
+import { PROPOSAL_STATE_ACTIVE, PROPOSAL_STATE_CANCELED, PROPOSAL_STATE_EXECUTED, PROPOSAL_STATE_PENDING, PROPOSAL_STATE_QUEUED } from "./constants";
 
 export function handleProposalCreated(event: ProposalCreated): void {
   let proposal = getOrCreateProposal(event.params.proposalId);
@@ -66,11 +66,34 @@ export function handleProposalDeadlineExtended(
   proposal.save();
 }
 
-export function handleProposalQueued(event: ProposalQueued): void {}
+export function handleProposalQueued(event: ProposalQueued): void {
+  let proposal = getOrCreateProposal(event.params.proposalId);
+  proposal.state = PROPOSAL_STATE_QUEUED;
+  proposal.eta = event.params.eta;
+  proposal.queuedAtBlock = event.block.number;
+  proposal.queuedAtTimestamp = event.block.timestamp;
+  proposal.save();
+}
 
-export function handleProposalExecuted(event: ProposalExecuted): void {}
+export function handleProposalExecuted(event: ProposalExecuted): void {
+  let proposal = getOrCreateProposal(event.params.proposalId);
+  proposal.state = PROPOSAL_STATE_EXECUTED;
+  proposal.executedAtBlock = event.block.number;
+  proposal.executedAtTimestamp = event.block.timestamp;
+  proposal.executedTransactionHash = event.transaction.hash;
+  proposal.save();
+}
 
-export function handleProposalCanceled(event: ProposalCanceled): void {}
+export function handleProposalCanceled(event: ProposalCanceled): void {
+  let proposal = getOrCreateProposal(event.params.proposalId);
+  let delegate = getOrCreateDelegate(event.params.canceler);
+  proposal.state = PROPOSAL_STATE_CANCELED;
+  proposal.canceler = event.params.canceler;
+  proposal.isCancelerRole = delegate.cancelerRoleExpiresAt.gt(event.block.timestamp);
+  proposal.canceledAtBlock = event.block.number;
+  proposal.canceledAtTimestamp = event.block.timestamp;
+  proposal.save();
+}
 
 export function handleRoleGranted(event: RoleGranted): void {
   let delegate = getOrCreateDelegate(event.params.account);

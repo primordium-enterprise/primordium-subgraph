@@ -13,7 +13,8 @@ import {
 } from "../generated/PrimordiumGovernorV1/PrimordiumGovernorV1";
 
 export function createProposalCanceledEvent(
-  proposalId: BigInt
+  proposalId: BigInt,
+  canceler: Address
 ): ProposalCanceled {
   let proposalCanceledEvent = changetype<ProposalCanceled>(newMockEvent());
 
@@ -24,6 +25,10 @@ export function createProposalCanceledEvent(
       "proposalId",
       ethereum.Value.fromUnsignedBigInt(proposalId)
     )
+  );
+
+  proposalCanceledEvent.parameters.push(
+    new ethereum.EventParam("canceler", ethereum.Value.fromAddress(canceler))
   );
 
   return proposalCanceledEvent;
