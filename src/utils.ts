@@ -120,12 +120,10 @@ export function getCurrentClock(
 }
 
 export function getOrCreateProposalVote(
-  delegateId: Bytes,
-  proposalId: BigInt
+  proposalId: BigInt,
+  delegateId: Bytes
 ): ProposalVote {
-  let id: Bytes = delegateId.concat(
-    Bytes.fromByteArray(ByteArray.fromBigInt(proposalId))
-  );
+  let id: Bytes = formatProposalId(proposalId).concat(delegateId);
 
   let proposalVote = ProposalVote.load(id);
 

@@ -101,14 +101,14 @@ export function handleVoteCast(event: VoteCast): void {
 }
 
 export function handleVoteCastWithParams(event: VoteCastWithParams): void {
-  let proposalVote = getOrCreateProposalVote(event.params.voter, event.params.proposalId);
+  let proposalVote = getOrCreateProposalVote(event.params.proposalId, event.params.voter);
   let proposal = getOrCreateProposal(event.params.proposalId);
 
   // Ensure that a delegate exists for the voter (in case a vote is cast with zero weight)
   getOrCreateDelegate(event.params.voter);
 
   // Initialize the ProposalVote
-  proposalVote.proposal = Bytes.fromByteArray(ByteArray.fromBigInt(event.params.proposalId));
+  proposalVote.proposal = proposal.id;
   proposalVote.delegate = event.params.voter;
   proposalVote.weight = event.params.weight;
   proposalVote.support = event.params.support;
@@ -119,6 +119,7 @@ export function handleVoteCastWithParams(event: VoteCastWithParams): void {
   proposalVote.blockTimestamp = event.block.timestamp;
 
   proposalVote.save();
+
 
   // Update proposal state to active (if necessary)
   if (proposal.state != PROPOSAL_STATE_ACTIVE) {
