@@ -1,6 +1,13 @@
 import { newMockEvent } from "matchstick-as";
 import { ethereum, BigInt, Address, Bytes } from "@graphprotocol/graph-ts";
 import {
+  BaseDeadlineExtensionUpdate,
+  ExtensionDecayPeriodUpdate,
+  ExtensionPercentDecayUpdate,
+  GovernorBaseInitialized,
+  GovernorFounded,
+  MaxDeadlineExtensionUpdate,
+  PercentMajorityUpdate,
   ProposalCanceled,
   ProposalCreated,
   ProposalDeadlineExtended,
@@ -13,6 +20,8 @@ import {
   RoleRevoked,
   VoteCast,
   VoteCastWithParams,
+  VotingDelayUpdate,
+  VotingPeriodUpdate,
 } from "../generated/PrimordiumGovernorV1/PrimordiumGovernorV1";
 
 export function createProposalCanceledEvent(
@@ -318,9 +327,7 @@ export function createQuorumBPSUpdateEvent(
   oldQuorumBps: BigInt,
   newQuorumBps: BigInt
 ): QuorumBPSUpdate {
-  let quorumBpsUpdate = changetype<QuorumBPSUpdate>(
-    newMockEvent()
-  );
+  let quorumBpsUpdate = changetype<QuorumBPSUpdate>(newMockEvent());
 
   quorumBpsUpdate.parameters = new Array();
 
@@ -366,4 +373,246 @@ export function createProposalGracePeriodUpdateEvent(
   );
 
   return proposalGracePeriodUpdate;
+}
+
+export function createGovernorBaseInitializedEvent(
+  executor: Address,
+  token: Address,
+  governanceCanBeginAt: BigInt,
+  governanceThresholdBps: BigInt,
+  isFounded: boolean
+): GovernorBaseInitialized {
+  let governorBaseInitializedEvent = changetype<GovernorBaseInitialized>(
+    newMockEvent()
+  );
+
+  governorBaseInitializedEvent.parameters = new Array();
+
+  governorBaseInitializedEvent.parameters.push(
+    new ethereum.EventParam("executor", ethereum.Value.fromAddress(executor))
+  );
+
+  governorBaseInitializedEvent.parameters.push(
+    new ethereum.EventParam("token", ethereum.Value.fromAddress(token))
+  );
+
+  governorBaseInitializedEvent.parameters.push(
+    new ethereum.EventParam(
+      "governanceCanBeginAt",
+      ethereum.Value.fromUnsignedBigInt(governanceCanBeginAt)
+    )
+  );
+
+  governorBaseInitializedEvent.parameters.push(
+    new ethereum.EventParam(
+      "governanceThresholdBps",
+      ethereum.Value.fromUnsignedBigInt(governanceThresholdBps)
+    )
+  );
+
+  governorBaseInitializedEvent.parameters.push(
+    new ethereum.EventParam("isFounded", ethereum.Value.fromBoolean(isFounded))
+  );
+
+  return governorBaseInitializedEvent;
+}
+
+export function createGovernorFoundedEvent(
+  proposalId: BigInt
+): GovernorFounded {
+  let governorFoundedEvent = changetype<GovernorFounded>(newMockEvent());
+
+  governorFoundedEvent.parameters = new Array();
+
+  governorFoundedEvent.parameters.push(
+    new ethereum.EventParam(
+      "proposalId",
+      ethereum.Value.fromUnsignedBigInt(proposalId)
+    )
+  );
+
+  return governorFoundedEvent;
+}
+
+export function createVotingDelayUpdateEvent(
+  oldVotingDelay: BigInt,
+  newVotingDelay: BigInt
+): VotingDelayUpdate {
+  let votingDelayUpdate = changetype<VotingDelayUpdate>(newMockEvent());
+
+  votingDelayUpdate.parameters = new Array();
+
+  votingDelayUpdate.parameters.push(
+    new ethereum.EventParam(
+      "oldVotingDelay",
+      ethereum.Value.fromUnsignedBigInt(oldVotingDelay)
+    )
+  );
+
+  votingDelayUpdate.parameters.push(
+    new ethereum.EventParam(
+      "newVotingDelay",
+      ethereum.Value.fromUnsignedBigInt(newVotingDelay)
+    )
+  );
+
+  return votingDelayUpdate;
+}
+
+export function createVotingPeriodUpdateEvent(
+  oldVotingPeriod: BigInt,
+  newVotingPeriod: BigInt
+): VotingPeriodUpdate {
+  let votingPeriodUpdate = changetype<VotingPeriodUpdate>(newMockEvent());
+
+  votingPeriodUpdate.parameters = new Array();
+
+  votingPeriodUpdate.parameters.push(
+    new ethereum.EventParam(
+      "oldVotingPeriod",
+      ethereum.Value.fromUnsignedBigInt(oldVotingPeriod)
+    )
+  );
+
+  votingPeriodUpdate.parameters.push(
+    new ethereum.EventParam(
+      "newVotingPeriod",
+      ethereum.Value.fromUnsignedBigInt(newVotingPeriod)
+    )
+  );
+
+  return votingPeriodUpdate;
+}
+
+export function createPercentMajorityUpdateEvent(
+  oldPercentMajority: BigInt,
+  newPercentMajority: BigInt
+): PercentMajorityUpdate {
+  let percentMajorityUpdate = changetype<PercentMajorityUpdate>(newMockEvent());
+
+  percentMajorityUpdate.parameters = new Array();
+
+  percentMajorityUpdate.parameters.push(
+    new ethereum.EventParam(
+      "oldPercentMajority",
+      ethereum.Value.fromUnsignedBigInt(oldPercentMajority)
+    )
+  );
+
+  percentMajorityUpdate.parameters.push(
+    new ethereum.EventParam(
+      "newPercentMajority",
+      ethereum.Value.fromUnsignedBigInt(newPercentMajority)
+    )
+  );
+
+  return percentMajorityUpdate;
+}
+
+export function createMaxDeadlineExtensionUpdateEvent(
+  oldMaxDeadlineExtension: BigInt,
+  newMaxDeadlineExtension: BigInt
+): MaxDeadlineExtensionUpdate {
+  let maxDeadlineExtensionUpdate = changetype<MaxDeadlineExtensionUpdate>(
+    newMockEvent()
+  );
+
+  maxDeadlineExtensionUpdate.parameters = new Array();
+
+  maxDeadlineExtensionUpdate.parameters.push(
+    new ethereum.EventParam(
+      "oldMaxDeadlineExtension",
+      ethereum.Value.fromUnsignedBigInt(oldMaxDeadlineExtension)
+    )
+  );
+
+  maxDeadlineExtensionUpdate.parameters.push(
+    new ethereum.EventParam(
+      "newMaxDeadlineExtension",
+      ethereum.Value.fromUnsignedBigInt(newMaxDeadlineExtension)
+    )
+  );
+
+  return maxDeadlineExtensionUpdate;
+}
+
+export function createBaseDeadlineExtensionUpdateEvent(
+  oldBaseDeadlineExtension: BigInt,
+  newBaseDeadlineExtension: BigInt
+): BaseDeadlineExtensionUpdate {
+  let baseDeadlineExtensionUpdate = changetype<BaseDeadlineExtensionUpdate>(
+    newMockEvent()
+  );
+
+  baseDeadlineExtensionUpdate.parameters = new Array();
+
+  baseDeadlineExtensionUpdate.parameters.push(
+    new ethereum.EventParam(
+      "oldBaseDeadlineExtension",
+      ethereum.Value.fromUnsignedBigInt(oldBaseDeadlineExtension)
+    )
+  );
+
+  baseDeadlineExtensionUpdate.parameters.push(
+    new ethereum.EventParam(
+      "newBaseDeadlineExtension",
+      ethereum.Value.fromUnsignedBigInt(newBaseDeadlineExtension)
+    )
+  );
+
+  return baseDeadlineExtensionUpdate;
+}
+
+export function createExtensionDecayPeriodUpdateEvent(
+  oldDecayPeriod: BigInt,
+  newDecayPeriod: BigInt
+): ExtensionDecayPeriodUpdate {
+  let extensionDecayPeriodUpdate = changetype<ExtensionDecayPeriodUpdate>(
+    newMockEvent()
+  );
+
+  extensionDecayPeriodUpdate.parameters = new Array();
+
+  extensionDecayPeriodUpdate.parameters.push(
+    new ethereum.EventParam(
+      "oldDecayPeriod",
+      ethereum.Value.fromUnsignedBigInt(oldDecayPeriod)
+    )
+  );
+
+  extensionDecayPeriodUpdate.parameters.push(
+    new ethereum.EventParam(
+      "newDecayPeriod",
+      ethereum.Value.fromUnsignedBigInt(newDecayPeriod)
+    )
+  );
+
+  return extensionDecayPeriodUpdate;
+}
+
+export function createExtensionPercentDecayUpdateEvent(
+  oldPercentDecay: BigInt,
+  newPercentDecay: BigInt
+): ExtensionPercentDecayUpdate {
+  let extensionPercentDecayUpdate = changetype<ExtensionPercentDecayUpdate>(
+    newMockEvent()
+  );
+
+  extensionPercentDecayUpdate.parameters = new Array();
+
+  extensionPercentDecayUpdate.parameters.push(
+    new ethereum.EventParam(
+      "oldPercentDecay",
+      ethereum.Value.fromUnsignedBigInt(oldPercentDecay)
+    )
+  );
+
+  extensionPercentDecayUpdate.parameters.push(
+    new ethereum.EventParam(
+      "newPercentDecay",
+      ethereum.Value.fromUnsignedBigInt(newPercentDecay)
+    )
+  );
+
+  return extensionPercentDecayUpdate;
 }

@@ -144,9 +144,20 @@ export function getGovernanceData(): GovernanceData {
     governanceData.totalSupply = BigInt.zero();
     governanceData.maxSupply = BigInt.zero();
     governanceData.proposalCount = BigInt.zero();
-    governanceData.proposalThresholdBps = BigInt.zero();
-    governanceData.quorumBps = BigInt.zero();
+    governanceData.proposalThresholdBps = 0;
+    governanceData.quorumBps = 0;
     governanceData.proposalGracePeriod = BigInt.zero();
+    governanceData.governanceCanBeginAt = BigInt.zero();
+    governanceData.governanceThresholdBps = 0;
+    governanceData.isFounded = false;
+    governanceData.votingDelay = BigInt.zero();
+    governanceData.votingPeriod = BigInt.zero();
+    governanceData.percentMajority = 50;
+    governanceData.maxDeadlineExtension = BigInt.zero();
+    governanceData.baseDeadlineExtension = BigInt.zero();
+    governanceData.extensionDecayPeriod = BigInt.zero();
+    governanceData.extensionPercentDecay = 0;
+
     governanceData.save();
   }
 

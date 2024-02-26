@@ -201,11 +201,47 @@ type GovernanceData @entity {
   proposalCount: BigInt!
 
   # The basis points of the total vote supply required to submit a proposal
-  proposalThresholdBps: BigInt!
+  proposalThresholdBps: Int!
 
   # The basis points of the total vote supply of forVotes + abstainVotes required to reach a quorum
-  quorumBps: BigInt!
+  quorumBps: Int!
 
   # The grace period after a proposal deadline in which a successful proposal must be queued before it is expired
   proposalGracePeriod: BigInt!
+
+  # The timestamp at which proposals can be created to enter governance
+  governanceCanBeginAt: BigInt!
+
+  # The basis points threshold of the total supply required to begin governance
+  governanceThresholdBps: Int!
+
+  # True if a proposal to enter governance has been successfully passed and executed (allowing any further proposals)
+  isFounded: Boolean!
+
+  # Block when founded
+  foundedAtBlock: BigInt
+
+  # Timestamp when founded
+  foundedAtTimestamp: BigInt
+
+  # The delay before voting begins on a newly-created proposal
+  votingDelay: BigInt!
+
+  # The time period for voting on a proposal (denoted in terms of the CLOCK_MODE())
+  votingPeriod: BigInt!
+
+  # The percentage majority of forVotes required for proposal success
+  percentMajority: Int!
+
+  # The maximum period from the original proposal voting deadline that a proposal's deadline can be extended by
+  maxDeadlineExtension: BigInt!
+
+  # The base period used in calculating the proposal deadline extension when a vote is cast
+  baseDeadlineExtension: BigInt!
+
+  # The period in which the extensionPercentDecay is applied to the baseDeadlineExtension
+  extensionDecayPeriod: BigInt!
+
+  # THe percentage that the baseDeadlineExtension decays by every extensionDecayPeriod
+  extensionPercentDecay: Int!
 }

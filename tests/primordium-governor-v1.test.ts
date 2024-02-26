@@ -16,6 +16,13 @@ import {
   address3,
 } from "./test-utils";
 import {
+  handleBaseDeadlineExtensionUpdate,
+  handleExtensionDecayPeriodUpdate,
+  handleExtensionPercentDecayUpdate,
+  handleGovernorBaseInitialized,
+  handleGovernorFounded,
+  handleMaxDeadlineExtensionUpdate,
+  handlePercentMajorityUpdate,
   handleProposalCanceled,
   handleProposalCreated,
   handleProposalDeadlineExtended,
@@ -28,8 +35,17 @@ import {
   handleRoleRevoked,
   handleVoteCast,
   handleVoteCastWithParams,
+  handleVotingDelayUpdate,
+  handleVotingPeriodUpdate,
 } from "../src/primordium-governor-v1";
 import {
+  createBaseDeadlineExtensionUpdateEvent,
+  createExtensionDecayPeriodUpdateEvent,
+  createExtensionPercentDecayUpdateEvent,
+  createGovernorBaseInitializedEvent,
+  createGovernorFoundedEvent,
+  createMaxDeadlineExtensionUpdateEvent,
+  createPercentMajorityUpdateEvent,
   createProposalCanceledEvent,
   createProposalCreatedEvent,
   createProposalDeadlineExtendedEvent,
@@ -42,6 +58,8 @@ import {
   createRoleRevokedEvent,
   createVoteCastEvent,
   createVoteCastWithParamsEvent,
+  createVotingDelayUpdateEvent,
+  createVotingPeriodUpdateEvent,
 } from "./primordium-governor-v1-utils";
 import {
   CANCELER_ROLE,
@@ -378,8 +396,8 @@ describe("governance data updates...", () => {
     handleProposalThresholdBPSUpdate(event);
 
     let governanceData = getGovernanceData();
-    assert.bigIntEquals(
-      event.params.newProposalThresholdBps,
+    assert.i32Equals(
+      event.params.newProposalThresholdBps.toI32(),
       governanceData.proposalThresholdBps
     );
   });
@@ -392,7 +410,10 @@ describe("governance data updates...", () => {
     handleQuorumBPSUpdate(event);
 
     let governanceData = getGovernanceData();
-    assert.bigIntEquals(event.params.newQuorumBps, governanceData.quorumBps);
+    assert.i32Equals(
+      event.params.newQuorumBps.toI32(),
+      governanceData.quorumBps
+    );
   });
 
   test("handleProposalGracePeriodUpdate()", () => {
@@ -406,6 +427,142 @@ describe("governance data updates...", () => {
     assert.bigIntEquals(
       event.params.newGracePeriod,
       governanceData.proposalGracePeriod
+    );
+  });
+
+  test("handleGovernorBaseInitialized()", () => {
+    const event = createGovernorBaseInitializedEvent(
+      Address.zero(),
+      Address.zero(),
+      BigInt.fromI32(10),
+      BigInt.fromI32(100),
+      false
+    );
+    handleGovernorBaseInitialized(event);
+
+    let governanceData = getGovernanceData();
+    assert.bigIntEquals(
+      event.params.governanceCanBeginAt,
+      governanceData.governanceCanBeginAt
+    );
+    assert.i32Equals(
+      event.params.governanceThresholdBps.toI32(),
+      governanceData.governanceThresholdBps
+    );
+    assert.booleanEquals(event.params.isFounded, governanceData.isFounded);
+  });
+
+  test("handleGovernorFounded()", () => {
+    const event = createGovernorFoundedEvent(proposalNumber);
+    handleGovernorFounded(event);
+
+    let governanceData = getGovernanceData();
+    assert.booleanEquals(true, governanceData.isFounded);
+    assert.bigIntEquals(
+      event.block.number,
+      governanceData.foundedAtBlock as BigInt
+    );
+    assert.bigIntEquals(
+      event.block.timestamp,
+      governanceData.foundedAtTimestamp as BigInt
+    );
+  });
+
+  test("handleVotingDelayUpdate()", () => {
+    const event = createVotingDelayUpdateEvent(
+      BigInt.zero(),
+      BigInt.fromI32(200)
+    );
+    handleVotingDelayUpdate(event);
+
+    let governanceData = getGovernanceData();
+    assert.bigIntEquals(
+      event.params.newVotingDelay,
+      governanceData.votingDelay
+    );
+  });
+
+  test("handleVotingPeriodUpdate()", () => {
+    const event = createVotingPeriodUpdateEvent(
+      BigInt.zero(),
+      BigInt.fromI32(200)
+    );
+    handleVotingPeriodUpdate(event);
+
+    let governanceData = getGovernanceData();
+    assert.bigIntEquals(
+      event.params.newVotingPeriod,
+      governanceData.votingPeriod
+    );
+  });
+
+  test("handlePercentMajorityUpdate()", () => {
+    const event = createPercentMajorityUpdateEvent(
+      BigInt.zero(),
+      BigInt.fromI32(60)
+    );
+    handlePercentMajorityUpdate(event);
+
+    let governanceData = getGovernanceData();
+    assert.i32Equals(
+      event.params.newPercentMajority.toI32(),
+      governanceData.percentMajority
+    );
+  });
+
+  test("handleMaxDeadlineExtensionUpdate()", () => {
+    const event = createMaxDeadlineExtensionUpdateEvent(
+      BigInt.zero(),
+      BigInt.fromI32(100)
+    );
+    handleMaxDeadlineExtensionUpdate(event);
+
+    let governanceData = getGovernanceData();
+    assert.bigIntEquals(
+      event.params.newMaxDeadlineExtension,
+      governanceData.maxDeadlineExtension
+    );
+  });
+
+  test("handleBaseDeadlineExtensionUpdate()", () => {
+    const event = createBaseDeadlineExtensionUpdateEvent(
+      BigInt.zero(),
+      BigInt.fromI32(100)
+    );
+    handleBaseDeadlineExtensionUpdate(event);
+
+    let governanceData = getGovernanceData();
+    assert.bigIntEquals(
+      event.params.newBaseDeadlineExtension,
+      governanceData.baseDeadlineExtension
+    );
+  });
+
+  test("handleExtensionDecayPeriodUpdate()", () => {
+    const event = createExtensionDecayPeriodUpdateEvent(
+      BigInt.zero(),
+      BigInt.fromI32(100)
+    );
+    handleExtensionDecayPeriodUpdate(event);
+
+    let governanceData = getGovernanceData();
+    assert.bigIntEquals(
+      event.params.newDecayPeriod,
+      governanceData.extensionDecayPeriod
+    );
+  });
+
+  test("handleExtensionPercentDecayUpdate()", () => {
+    const event = createExtensionPercentDecayUpdateEvent(
+      BigInt.zero(),
+      BigInt.fromI32(2)
+    );
+    handleExtensionPercentDecayUpdate(event);
+
+    let governanceData = getGovernanceData();
+    assert.i32Equals(
+      event.params.newPercentDecay.toI32(),
+      governanceData.extensionPercentDecay
     );
   });
 });

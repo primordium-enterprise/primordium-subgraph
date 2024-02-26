@@ -1,5 +1,12 @@
 import { BigInt, ByteArray, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import {
+  BaseDeadlineExtensionUpdate,
+  ExtensionDecayPeriodUpdate,
+  ExtensionPercentDecayUpdate,
+  GovernorBaseInitialized,
+  GovernorFounded,
+  MaxDeadlineExtensionUpdate,
+  PercentMajorityUpdate,
   ProposalCanceled,
   ProposalCreated,
   ProposalDeadlineExtended,
@@ -12,17 +19,35 @@ import {
   RoleRevoked,
   VoteCast,
   VoteCastWithParams,
+  VotingDelayUpdate,
+  VotingPeriodUpdate,
 } from "../generated/PrimordiumGovernorV1/PrimordiumGovernorV1";
-import { CANCELER_ROLE, PROPOSER_ROLE, extractTitleFromDescription, getCurrentClock, getGovernanceData, getOrCreateDelegate, getOrCreateProposal, getOrCreateProposalVote } from "./utils";
+import {
+  CANCELER_ROLE,
+  PROPOSER_ROLE,
+  extractTitleFromDescription,
+  getCurrentClock,
+  getGovernanceData,
+  getOrCreateDelegate,
+  getOrCreateProposal,
+  getOrCreateProposalVote,
+} from "./utils";
 import { Delegate } from "../generated/schema";
-import { PROPOSAL_STATE_ACTIVE, PROPOSAL_STATE_CANCELED, PROPOSAL_STATE_EXECUTED, PROPOSAL_STATE_PENDING, PROPOSAL_STATE_QUEUED } from "./constants";
+import {
+  PROPOSAL_STATE_ACTIVE,
+  PROPOSAL_STATE_CANCELED,
+  PROPOSAL_STATE_EXECUTED,
+  PROPOSAL_STATE_PENDING,
+  PROPOSAL_STATE_QUEUED,
+} from "./constants";
 
 export function handleProposalCreated(event: ProposalCreated): void {
   let proposal = getOrCreateProposal(event.params.proposalId);
   let delegate = Delegate.load(event.params.proposer);
 
   proposal.proposer = event.params.proposer;
-  proposal.isProposerRole = !!delegate && delegate.proposerRoleExpiresAt.gt(event.block.timestamp);
+  proposal.isProposerRole =
+    !!delegate && delegate.proposerRoleExpiresAt.gt(event.block.timestamp);
   proposal.targets = changetype<Bytes[]>(event.params.targets);
   proposal.values = event.params.values;
   proposal.calldatas = event.params.calldatas;
@@ -57,7 +82,9 @@ export function handleProposalCreated(event: ProposalCreated): void {
   proposal.save();
 
   let governanceData = getGovernanceData();
-  governanceData.proposalCount = governanceData.proposalCount.plus(BigInt.fromI32(1));
+  governanceData.proposalCount = governanceData.proposalCount.plus(
+    BigInt.fromI32(1)
+  );
   governanceData.save();
 }
 
@@ -92,7 +119,9 @@ export function handleProposalCanceled(event: ProposalCanceled): void {
   let delegate = getOrCreateDelegate(event.params.canceler);
   proposal.state = PROPOSAL_STATE_CANCELED;
   proposal.canceler = event.params.canceler;
-  proposal.isCancelerRole = delegate.cancelerRoleExpiresAt.gt(event.block.timestamp);
+  proposal.isCancelerRole = delegate.cancelerRoleExpiresAt.gt(
+    event.block.timestamp
+  );
   proposal.canceledAtBlock = event.block.number;
   proposal.canceledAtTimestamp = event.block.timestamp;
   proposal.save();
@@ -122,12 +151,17 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 
 export function handleVoteCast(event: VoteCast): void {
   // Simply handle as a VoteCastWithParams event, but where the params are set to zero bytes
-  event.parameters.push(new ethereum.EventParam("params", ethereum.Value.fromBytes(new Bytes(0))));
+  event.parameters.push(
+    new ethereum.EventParam("params", ethereum.Value.fromBytes(new Bytes(0)))
+  );
   handleVoteCastWithParams(changetype<VoteCastWithParams>(event));
 }
 
 export function handleVoteCastWithParams(event: VoteCastWithParams): void {
-  let proposalVote = getOrCreateProposalVote(event.params.proposalId, event.params.voter);
+  let proposalVote = getOrCreateProposalVote(
+    event.params.proposalId,
+    event.params.voter
+  );
   let proposal = getOrCreateProposal(event.params.proposalId);
 
   // Ensure that a delegate exists for the voter (in case a vote is cast with zero weight)
@@ -139,13 +173,14 @@ export function handleVoteCastWithParams(event: VoteCastWithParams): void {
   proposalVote.weight = event.params.weight;
   proposalVote.support = event.params.support;
   proposalVote.isForProposal = event.params.support == 1;
-  proposalVote.reason = event.params.reason.length > 0 ? event.params.reason : null;
-  proposalVote.params = event.params.params.length > 0 ? event.params.params : null;
+  proposalVote.reason =
+    event.params.reason.length > 0 ? event.params.reason : null;
+  proposalVote.params =
+    event.params.params.length > 0 ? event.params.params : null;
   proposalVote.blockNumber = event.block.number;
   proposalVote.blockTimestamp = event.block.timestamp;
 
   proposalVote.save();
-
 
   // Update proposal state to active (if necessary)
   if (proposal.state != PROPOSAL_STATE_ACTIVE) {
@@ -164,20 +199,96 @@ export function handleVoteCastWithParams(event: VoteCastWithParams): void {
   proposal.save();
 }
 
-export function handleProposalThresholdBPSUpdate(event: ProposalThresholdBPSUpdate): void {
+export function handleProposalThresholdBPSUpdate(
+  event: ProposalThresholdBPSUpdate
+): void {
   let governanceData = getGovernanceData();
-  governanceData.proposalThresholdBps = event.params.newProposalThresholdBps;
+  governanceData.proposalThresholdBps =
+    event.params.newProposalThresholdBps.toI32();
   governanceData.save();
 }
 
 export function handleQuorumBPSUpdate(event: QuorumBPSUpdate): void {
   let governanceData = getGovernanceData();
-  governanceData.quorumBps = event.params.newQuorumBps;
+  governanceData.quorumBps = event.params.newQuorumBps.toI32();
   governanceData.save();
 }
 
-export function handleProposalGracePeriodUpdate(event: ProposalGracePeriodUpdate): void {
+export function handleProposalGracePeriodUpdate(
+  event: ProposalGracePeriodUpdate
+): void {
   let governanceData = getGovernanceData();
   governanceData.proposalGracePeriod = event.params.newGracePeriod;
+  governanceData.save();
+}
+
+export function handleGovernorBaseInitialized(
+  event: GovernorBaseInitialized
+): void {
+  let governanceData = getGovernanceData();
+  governanceData.governanceCanBeginAt = event.params.governanceCanBeginAt;
+  governanceData.governanceThresholdBps =
+    event.params.governanceThresholdBps.toI32();
+  governanceData.isFounded = event.params.isFounded;
+  governanceData.save();
+}
+
+export function handleGovernorFounded(event: GovernorFounded): void {
+  let governanceData = getGovernanceData();
+  governanceData.isFounded = true;
+  governanceData.foundedAtBlock = event.block.number;
+  governanceData.foundedAtTimestamp = event.block.timestamp;
+  governanceData.save();
+}
+
+export function handleVotingDelayUpdate(event: VotingDelayUpdate): void {
+  let governanceData = getGovernanceData();
+  governanceData.votingDelay = event.params.newVotingDelay;
+  governanceData.save();
+}
+
+export function handleVotingPeriodUpdate(event: VotingPeriodUpdate): void {
+  let governanceData = getGovernanceData();
+  governanceData.votingPeriod = event.params.newVotingPeriod;
+  governanceData.save();
+}
+
+export function handlePercentMajorityUpdate(
+  event: PercentMajorityUpdate
+): void {
+  let governanceData = getGovernanceData();
+  governanceData.percentMajority = event.params.newPercentMajority.toI32();
+  governanceData.save();
+}
+
+export function handleMaxDeadlineExtensionUpdate(
+  event: MaxDeadlineExtensionUpdate
+): void {
+  let governanceData = getGovernanceData();
+  governanceData.maxDeadlineExtension = event.params.newMaxDeadlineExtension;
+  governanceData.save();
+}
+
+export function handleBaseDeadlineExtensionUpdate(
+  event: BaseDeadlineExtensionUpdate
+): void {
+  let governanceData = getGovernanceData();
+  governanceData.baseDeadlineExtension = event.params.newBaseDeadlineExtension;
+  governanceData.save();
+}
+
+export function handleExtensionDecayPeriodUpdate(
+  event: ExtensionDecayPeriodUpdate
+): void {
+  let governanceData = getGovernanceData();
+  governanceData.extensionDecayPeriod = event.params.newDecayPeriod;
+  governanceData.save();
+}
+
+export function handleExtensionPercentDecayUpdate(
+  event: ExtensionPercentDecayUpdate
+): void {
+  let governanceData = getGovernanceData();
+  governanceData.extensionPercentDecay = event.params.newPercentDecay.toI32();
   governanceData.save();
 }

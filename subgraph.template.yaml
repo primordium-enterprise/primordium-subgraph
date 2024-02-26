@@ -48,6 +48,24 @@ dataSources:
           handler: handleQuorumBPSUpdate(uint256,uint256)
         - event: ProposalGracePeriodUpdate(uint256,uint256)
           handler: handleProposalGracePeriodUpdate
+        - event: GovernorBaseInitialized(address,address,uint256,uint256,bool)
+          handler: handleGovernorBaseInitialized
+        - event: GovernorFounded(uint256)
+          handler: handleGovernorFounded
+        - event: VotingDelayUpdate(uint256,uint256)
+          handler: handleVotingDelayUpdate
+        - event: VotingPeriodUpdate(uint256,uint256)
+          handler: handleVotingPeriodUpdate
+        - event: PercentMajorityUpdate(uint256,uint256)
+          handler: handlePercentMajorityUpdate
+        - event: MaxDeadlineExtensionUpdate(uint256,uint256)
+          handler: handleMaxDeadlineExtensionUpdate
+        - event: BaseDeadlineExtensionUpdate(uint256,uint256)
+          handler: handleBaseDeadlineExtensionUpdate
+        - event: ExtensionDecayPeriodUpdate(uint256,uint256)
+          handler: handleExtensionDecayPeriodUpdate
+        - event: ExtensionPercentDecayUpdate(uint256,uint256)
+          handler: handleExtensionPercentDecayUpdate
       file: ./src/primordium-governor-v1.ts
   - kind: ethereum
     name: PrimordiumTokenV1
