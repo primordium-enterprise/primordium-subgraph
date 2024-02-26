@@ -200,5 +200,12 @@ type GovernanceData @entity {
   # Total amount of created proposals
   proposalCount: BigInt!
 
+  # The basis points of the total vote supply required to submit a proposal
+  proposalThresholdBps: BigInt!
 
+  # The basis points of the total vote supply of forVotes + abstainVotes required to reach a quorum
+  quorumBps: BigInt!
+
+  # The grace period after a proposal deadline in which a successful proposal must be queued before it is expired
+  proposalGracePeriod: BigInt!
 }

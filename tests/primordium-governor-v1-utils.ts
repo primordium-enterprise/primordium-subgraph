@@ -5,7 +5,10 @@ import {
   ProposalCreated,
   ProposalDeadlineExtended,
   ProposalExecuted,
+  ProposalGracePeriodUpdate,
   ProposalQueued,
+  ProposalThresholdBPSUpdate,
+  QuorumBPSUpdate,
   RoleGranted,
   RoleRevoked,
   VoteCast,
@@ -282,4 +285,85 @@ export function createVoteCastWithParamsEvent(
   );
 
   return voteCastWithParamsEvent;
+}
+
+export function createProposalThresholdBPSUpdateEvent(
+  oldProposalThresholdBps: BigInt,
+  newProposalThresholdBps: BigInt
+): ProposalThresholdBPSUpdate {
+  let proposalThresholdBpsUpdate = changetype<ProposalThresholdBPSUpdate>(
+    newMockEvent()
+  );
+
+  proposalThresholdBpsUpdate.parameters = new Array();
+
+  proposalThresholdBpsUpdate.parameters.push(
+    new ethereum.EventParam(
+      "oldProposalThresholdBps",
+      ethereum.Value.fromUnsignedBigInt(oldProposalThresholdBps)
+    )
+  );
+
+  proposalThresholdBpsUpdate.parameters.push(
+    new ethereum.EventParam(
+      "newProposalThresholdBps",
+      ethereum.Value.fromUnsignedBigInt(newProposalThresholdBps)
+    )
+  );
+
+  return proposalThresholdBpsUpdate;
+}
+
+export function createQuorumBPSUpdateEvent(
+  oldQuorumBps: BigInt,
+  newQuorumBps: BigInt
+): QuorumBPSUpdate {
+  let quorumBpsUpdate = changetype<QuorumBPSUpdate>(
+    newMockEvent()
+  );
+
+  quorumBpsUpdate.parameters = new Array();
+
+  quorumBpsUpdate.parameters.push(
+    new ethereum.EventParam(
+      "oldQuorumBps",
+      ethereum.Value.fromUnsignedBigInt(oldQuorumBps)
+    )
+  );
+
+  quorumBpsUpdate.parameters.push(
+    new ethereum.EventParam(
+      "newQuorumBps",
+      ethereum.Value.fromUnsignedBigInt(newQuorumBps)
+    )
+  );
+
+  return quorumBpsUpdate;
+}
+
+export function createProposalGracePeriodUpdateEvent(
+  oldGracePeriod: BigInt,
+  newGracePeriod: BigInt
+): ProposalGracePeriodUpdate {
+  let proposalGracePeriodUpdate = changetype<ProposalGracePeriodUpdate>(
+    newMockEvent()
+  );
+
+  proposalGracePeriodUpdate.parameters = new Array();
+
+  proposalGracePeriodUpdate.parameters.push(
+    new ethereum.EventParam(
+      "oldGracePeriod",
+      ethereum.Value.fromUnsignedBigInt(oldGracePeriod)
+    )
+  );
+
+  proposalGracePeriodUpdate.parameters.push(
+    new ethereum.EventParam(
+      "newGracePeriod",
+      ethereum.Value.fromUnsignedBigInt(newGracePeriod)
+    )
+  );
+
+  return proposalGracePeriodUpdate;
 }

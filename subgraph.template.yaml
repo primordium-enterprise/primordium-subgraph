@@ -42,6 +42,12 @@ dataSources:
           handler: handleVoteCast
         - event: VoteCastWithParams(indexed address,indexed uint256,uint8,uint256,string,bytes)
           handler: handleVoteCastWithParams
+        - event: ProposalThresholdBPSUpdate(uint256,uint256)
+          handler: handleProposalThresholdBPSUpdate
+        - event: QuorumBPSUpdate(uint256,uint256)
+          handler: handleQuorumBPSUpdate(uint256,uint256)
+        - event: ProposalGracePeriodUpdate(uint256,uint256)
+          handler: handleProposalGracePeriodUpdate
       file: ./src/primordium-governor-v1.ts
   - kind: ethereum
     name: PrimordiumTokenV1

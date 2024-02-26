@@ -16,22 +16,28 @@ import {
   address3,
 } from "./test-utils";
 import {
-    handleProposalCanceled,
+  handleProposalCanceled,
   handleProposalCreated,
   handleProposalDeadlineExtended,
   handleProposalExecuted,
+  handleProposalGracePeriodUpdate,
   handleProposalQueued,
+  handleProposalThresholdBPSUpdate,
+  handleQuorumBPSUpdate,
   handleRoleGranted,
   handleRoleRevoked,
   handleVoteCast,
   handleVoteCastWithParams,
 } from "../src/primordium-governor-v1";
 import {
-    createProposalCanceledEvent,
+  createProposalCanceledEvent,
   createProposalCreatedEvent,
   createProposalDeadlineExtendedEvent,
   createProposalExecutedEvent,
+  createProposalGracePeriodUpdateEvent,
   createProposalQueuedEvent,
+  createProposalThresholdBPSUpdateEvent,
+  createQuorumBPSUpdateEvent,
   createRoleGrantedEvent,
   createRoleRevokedEvent,
   createVoteCastEvent,
@@ -329,20 +335,77 @@ describe("Proposals...", () => {
     let proposal = getTestProposal();
     assert.stringEquals(PROPOSAL_STATE_EXECUTED, proposal.state);
     assert.bigIntEquals(event.block.number, proposal.executedAtBlock as BigInt);
-    assert.bigIntEquals(event.block.timestamp, proposal.executedAtTimestamp as BigInt);
-    assert.bytesEquals(event.transaction.hash, proposal.executedTransactionHash as Bytes);
+    assert.bigIntEquals(
+      event.block.timestamp,
+      proposal.executedAtTimestamp as BigInt
+    );
+    assert.bytesEquals(
+      event.transaction.hash,
+      proposal.executedTransactionHash as Bytes
+    );
   });
 
   test("handleProposalCanceled()", () => {
-    handleRoleGranted(createRoleGrantedEvent(CANCELER_ROLE, address3, BigInt.fromI32(10000000)));
+    handleRoleGranted(
+      createRoleGrantedEvent(CANCELER_ROLE, address3, BigInt.fromI32(10000000))
+    );
     const event = createProposalCanceledEvent(proposalNumber, address3);
     handleProposalCanceled(event);
 
     let proposal = getTestProposal();
     assert.stringEquals(PROPOSAL_STATE_CANCELED, proposal.state);
     assert.bigIntEquals(event.block.number, proposal.canceledAtBlock as BigInt);
-    assert.bigIntEquals(event.block.timestamp, proposal.canceledAtTimestamp as BigInt);
-    assert.addressEquals(event.params.canceler, Address.fromBytes(proposal.canceler as Bytes));
+    assert.bigIntEquals(
+      event.block.timestamp,
+      proposal.canceledAtTimestamp as BigInt
+    );
+    assert.addressEquals(
+      event.params.canceler,
+      Address.fromBytes(proposal.canceler as Bytes)
+    );
     assert.booleanEquals(true, proposal.isCancelerRole);
-  })
+  });
+});
+
+describe("governance data updates...", () => {
+  beforeEach(clearStore);
+
+  test("handleProposalThresholdBPSUpdate()", () => {
+    const event = createProposalThresholdBPSUpdateEvent(
+      BigInt.zero(),
+      BigInt.fromU32(100)
+    );
+    handleProposalThresholdBPSUpdate(event);
+
+    let governanceData = getGovernanceData();
+    assert.bigIntEquals(
+      event.params.newProposalThresholdBps,
+      governanceData.proposalThresholdBps
+    );
+  });
+
+  test("handleQuorumBPSUpdate()", () => {
+    const event = createQuorumBPSUpdateEvent(
+      BigInt.zero(),
+      BigInt.fromU32(100)
+    );
+    handleQuorumBPSUpdate(event);
+
+    let governanceData = getGovernanceData();
+    assert.bigIntEquals(event.params.newQuorumBps, governanceData.quorumBps);
+  });
+
+  test("handleProposalGracePeriodUpdate()", () => {
+    const event = createProposalGracePeriodUpdateEvent(
+      BigInt.zero(),
+      BigInt.fromU32(1000)
+    );
+    handleProposalGracePeriodUpdate(event);
+
+    let governanceData = getGovernanceData();
+    assert.bigIntEquals(
+      event.params.newGracePeriod,
+      governanceData.proposalGracePeriod
+    );
+  });
 });

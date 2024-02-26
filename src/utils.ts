@@ -144,6 +144,9 @@ export function getGovernanceData(): GovernanceData {
     governanceData.totalSupply = BigInt.zero();
     governanceData.maxSupply = BigInt.zero();
     governanceData.proposalCount = BigInt.zero();
+    governanceData.proposalThresholdBps = BigInt.zero();
+    governanceData.quorumBps = BigInt.zero();
+    governanceData.proposalGracePeriod = BigInt.zero();
     governanceData.save();
   }
 

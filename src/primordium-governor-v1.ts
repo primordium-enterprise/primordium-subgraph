@@ -4,7 +4,10 @@ import {
   ProposalCreated,
   ProposalDeadlineExtended,
   ProposalExecuted,
+  ProposalGracePeriodUpdate,
   ProposalQueued,
+  ProposalThresholdBPSUpdate,
+  QuorumBPSUpdate,
   RoleGranted,
   RoleRevoked,
   VoteCast,
@@ -159,4 +162,22 @@ export function handleVoteCastWithParams(event: VoteCastWithParams): void {
   }
 
   proposal.save();
+}
+
+export function handleProposalThresholdBPSUpdate(event: ProposalThresholdBPSUpdate): void {
+  let governanceData = getGovernanceData();
+  governanceData.proposalThresholdBps = event.params.newProposalThresholdBps;
+  governanceData.save();
+}
+
+export function handleQuorumBPSUpdate(event: QuorumBPSUpdate): void {
+  let governanceData = getGovernanceData();
+  governanceData.quorumBps = event.params.newQuorumBps;
+  governanceData.save();
+}
+
+export function handleProposalGracePeriodUpdate(event: ProposalGracePeriodUpdate): void {
+  let governanceData = getGovernanceData();
+  governanceData.proposalGracePeriod = event.params.newGracePeriod;
+  governanceData.save();
 }
