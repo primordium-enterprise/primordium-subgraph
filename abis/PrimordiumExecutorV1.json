@@ -748,6 +748,12 @@
         "internalType": "contract IERC20[]",
         "name": "assets",
         "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "payouts",
+        "type": "uint256[]"
       }
     ],
     "name": "WithdrawalProcessed",

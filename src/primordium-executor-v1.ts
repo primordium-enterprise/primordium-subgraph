@@ -1,4 +1,4 @@
-import { store } from "@graphprotocol/graph-ts";
+import { Bytes, store } from "@graphprotocol/graph-ts";
 import {
   BalanceSharesManagerUpdate as BalanceSharesManagerUpdateEvent,
   CallExecuted as CallExecutedEvent,
@@ -20,6 +20,7 @@ import {
   ExecutorCallExecutedEvent,
   ExecutorModule,
   ExecutorOperation,
+  WithdrawalProcessed,
 } from "../generated/schema";
 import { formatBigIntAsId, getExecutorData } from "./utils";
 
@@ -138,39 +139,22 @@ export function handleDepositRegistered(event: DepositRegisteredEvent): void {
   entity.save();
 }
 
-// export function handleWithdrawalAssetProcessed(
-//   event: WithdrawalAssetProcessedEvent,
-// ): void {
-//   let entity = new WithdrawalAssetProcessed(
-//     event.transaction.hash.concatI32(event.logIndex.toI32()),
-//   )
-//   entity.account = event.params.account
-//   entity.receiver = event.params.receiver
-//   entity.asset = event.params.asset
-//   entity.payout = event.params.payout
+export function handleWithdrawalProcessed(
+  event: WithdrawalProcessedEvent
+): void {
+  let entity = new WithdrawalProcessed(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  );
+  entity.account = event.params.account;
+  entity.receiver = event.params.receiver;
+  entity.sharesBurned = event.params.sharesBurned;
+  entity.totalSharesSupply = event.params.totalSharesSupply;
+  entity.assets = changetype<Bytes[]>(event.params.assets);
+  entity.payouts = event.params.payouts;
 
-//   entity.blockNumber = event.block.number
-//   entity.blockTimestamp = event.block.timestamp
-//   entity.transactionHash = event.transaction.hash
+  entity.blockNumber = event.block.number;
+  entity.blockTimestamp = event.block.timestamp;
+  entity.transactionHash = event.transaction.hash;
 
-//   entity.save()
-// }
-
-// export function handleWithdrawalProcessed(
-//   event: WithdrawalProcessedEvent,
-// ): void {
-//   let entity = new WithdrawalProcessed(
-//     event.transaction.hash.concatI32(event.logIndex.toI32()),
-//   )
-//   entity.account = event.params.account
-//   entity.receiver = event.params.receiver
-//   entity.sharesBurned = event.params.sharesBurned
-//   entity.totalSharesSupply = event.params.totalSharesSupply
-//   entity.assets = event.params.assets
-
-//   entity.blockNumber = event.block.number
-//   entity.blockTimestamp = event.block.timestamp
-//   entity.transactionHash = event.transaction.hash
-
-//   entity.save()
-// }
+  entity.save();
+}

@@ -304,40 +304,13 @@ export function createSharesOnboarderUpdateEvent(
   return sharesOnboarderUpdateEvent;
 }
 
-export function createWithdrawalAssetProcessedEvent(
-  account: Address,
-  receiver: Address,
-  asset: Address,
-  payout: BigInt
-): WithdrawalAssetProcessed {
-  let withdrawalAssetProcessedEvent = changetype<WithdrawalAssetProcessed>(
-    newMockEvent()
-  );
-
-  withdrawalAssetProcessedEvent.parameters = new Array();
-
-  withdrawalAssetProcessedEvent.parameters.push(
-    new ethereum.EventParam("account", ethereum.Value.fromAddress(account))
-  );
-  withdrawalAssetProcessedEvent.parameters.push(
-    new ethereum.EventParam("receiver", ethereum.Value.fromAddress(receiver))
-  );
-  withdrawalAssetProcessedEvent.parameters.push(
-    new ethereum.EventParam("asset", ethereum.Value.fromAddress(asset))
-  );
-  withdrawalAssetProcessedEvent.parameters.push(
-    new ethereum.EventParam("payout", ethereum.Value.fromUnsignedBigInt(payout))
-  );
-
-  return withdrawalAssetProcessedEvent;
-}
-
 export function createWithdrawalProcessedEvent(
   account: Address,
   receiver: Address,
   sharesBurned: BigInt,
   totalSharesSupply: BigInt,
-  assets: Array<Address>
+  assets: Array<Address>,
+  payouts: Array<BigInt>
 ): WithdrawalProcessed {
   let withdrawalProcessedEvent = changetype<WithdrawalProcessed>(
     newMockEvent()
@@ -365,6 +338,12 @@ export function createWithdrawalProcessedEvent(
   );
   withdrawalProcessedEvent.parameters.push(
     new ethereum.EventParam("assets", ethereum.Value.fromAddressArray(assets))
+  );
+  withdrawalProcessedEvent.parameters.push(
+    new ethereum.EventParam(
+      "payouts",
+      ethereum.Value.fromUnsignedBigIntArray(payouts)
+    )
   );
 
   return withdrawalProcessedEvent;

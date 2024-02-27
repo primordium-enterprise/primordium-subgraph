@@ -46,10 +46,6 @@ dataSources:
         - name: PrimordiumExecutorV1
           file: ./abis/PrimordiumExecutorV1.json
       eventHandlers:
-        - event: BalanceShareAllocated(indexed address,indexed uint256,address,uint256)
-          handler: handleBalanceShareAllocated
-        - event: BalanceSharesInitialized(address,uint256,uint256)
-          handler: handleBalanceSharesInitialized
         - event: BalanceSharesManagerUpdate(address,address)
           handler: handleBalanceSharesManagerUpdate
         - event: CallExecuted(indexed address,uint256,bytes,uint8)
@@ -60,24 +56,10 @@ dataSources:
           handler: handleDepositRegistered
         - event: DisabledModule(indexed address)
           handler: handleDisabledModule
-        - event: EIP1271MessageCanceled(indexed bytes32)
-          handler: handleEIP1271MessageCanceled
-        - event: EIP1271MessageSigned(indexed bytes32,uint256)
-          handler: handleEIP1271MessageSigned
         - event: EnabledModule(indexed address)
           handler: handleEnabledModule
-        - event: ExecutionFromModuleFailure(indexed address)
-          handler: handleExecutionFromModuleFailure
-        - event: ExecutionFromModuleSuccess(indexed address)
-          handler: handleExecutionFromModuleSuccess
-        - event: Initialized(uint64)
-          handler: handleInitialized
-        - event: InitializerAuthorized(address)
-          handler: handleInitializerAuthorized
         - event: MinDelayUpdate(uint256,uint256)
           handler: handleMinDelayUpdate
-        - event: ModulesInitialized(address[])
-          handler: handleModulesInitialized
         - event: OperationCanceled(indexed uint256,indexed address)
           handler: handleOperationCanceled
         - event: OperationExecuted(indexed uint256,indexed address)
@@ -87,11 +69,7 @@ dataSources:
           handler: handleOperationScheduled
         - event: SharesOnboarderUpdate(address,address)
           handler: handleSharesOnboarderUpdate
-        - event: Upgraded(indexed address)
-          handler: handleUpgraded
-        - event: WithdrawalAssetProcessed(indexed address,address,address,uint256)
-          handler: handleWithdrawalAssetProcessed
-        - event: WithdrawalProcessed(indexed address,address,uint256,uint256,address[])
+        - event: WithdrawalProcessed(indexed address,address,uint256,uint256,address[],uint256[])
           handler: handleWithdrawalProcessed
       file: ./src/primordium-executor-v1.ts
   - kind: ethereum

@@ -21,6 +21,7 @@ import {
   createOperationExecutedEvent,
   createOperationScheduledEvent,
   createSharesOnboarderUpdateEvent,
+  createWithdrawalProcessedEvent,
 } from "./primordium-executor-v1-utils";
 import { address1, address2, address3 } from "./test-utils";
 import {
@@ -36,6 +37,7 @@ import {
   handleOperationExecuted,
   handleOperationScheduled,
   handleSharesOnboarderUpdate,
+  handleWithdrawalProcessed,
 } from "../src/primordium-executor-v1";
 import { formatBigIntAsId, getExecutorData } from "../src/utils";
 import {
@@ -43,6 +45,7 @@ import {
   ExecutorCallExecutedEvent,
   ExecutorModule,
   ExecutorOperation,
+  WithdrawalProcessed,
 } from "../generated/schema";
 
 // Tests structure (matchstick-as >=0.5.0)
@@ -224,6 +227,26 @@ describe("deposits and withdrawals...", () => {
     assert.bytesEquals(event.params.quoteAsset, entity.quoteAsset);
     assert.bigIntEquals(event.params.depositAmount, entity.depositAmount);
     assert.bigIntEquals(event.params.mintAmount, entity.mintAmount);
+    assert.bigIntEquals(event.block.number, entity.blockNumber);
+    assert.bigIntEquals(event.block.timestamp, entity.blockTimestamp);
+    assert.bytesEquals(event.transaction.hash, entity.transactionHash);
+  })
+
+  test("handleWithdrawalProcessed()", () => {
+    const event = createWithdrawalProcessedEvent(address1, address2, BigInt.fromI32(200), BigInt.fromI32(10000), [Address.zero()], [BigInt.fromI32(1)]);
+    handleWithdrawalProcessed(event);
+
+    let entity = WithdrawalProcessed.load(event.transaction.hash.concatI32(event.logIndex.toI32())) as WithdrawalProcessed;
+    assert.bytesEquals(event.params.account, entity.account);
+    assert.bytesEquals(event.params.receiver, entity.receiver);
+    assert.bigIntEquals(event.params.sharesBurned, entity.sharesBurned);
+    assert.bigIntEquals(event.params.totalSharesSupply, entity.totalSharesSupply);
+    assert.i32Equals(event.params.assets.length, entity.assets.length);
+    assert.i32Equals(entity.assets.length, entity.payouts.length);
+    for (let i = 0; i < event.params.assets.length; i++) {
+      assert.bytesEquals(event.params.assets[i], entity.assets[i]);
+      assert.bigIntEquals(event.params.payouts[i], entity.payouts[i]);
+    }
     assert.bigIntEquals(event.block.number, entity.blockNumber);
     assert.bigIntEquals(event.block.timestamp, entity.blockTimestamp);
     assert.bytesEquals(event.transaction.hash, entity.transactionHash);
