@@ -303,3 +303,50 @@ type ExecutorCallExecutedEvent @entity(immutable: true) {
   # The transaction hash
   transactionHash: Bytes!
 }
+
+type ExecutorOperation @entity {
+  # The ID is the uint256 opNonce for the operation, represented as 32 big-endian bytes
+  id: Bytes!
+
+  # The module that created the operation
+  module: ExecutorModule!
+
+  # The target address
+  to: Bytes!
+
+  # The call value
+  value: BigInt!
+
+  # The calldata for the call
+  calldata: Bytes!
+
+  # The operation type, 0 for CALL and 1 for DELEGATECALL
+  operation: Int!
+
+  # The delay (in seconds) after scheduling before it can be executed
+  delay: BigInt!
+
+  # Block number when scheduled
+  scheduledAtBlock: BigInt!
+
+  # Block timestamp when scheduled
+  scheduledAtTimestamp: BigInt!
+
+  # True if canceled
+  isCanceled: Boolean!
+
+  # Block number when canceled (or null)
+  canceledAtBlock: BigInt
+
+  # Block timestamp when canceled (or null)
+  canceledAtTimestamp: BigInt
+
+  # True if executed
+  isExecuted: Boolean!
+
+  # Block number when executed (or null)
+  executedAtBlock: BigInt
+
+  # Block timestamp when executed (or null)
+  executedAtTimestamp: BigInt
+}

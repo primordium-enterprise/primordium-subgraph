@@ -7,8 +7,6 @@ import {
   DisabledModule as DisabledModuleEvent,
   DistributorUpdate,
   EnabledModule as EnabledModuleEvent,
-  ExecutionFromModuleFailure as ExecutionFromModuleFailureEvent,
-  ExecutionFromModuleSuccess as ExecutionFromModuleSuccessEvent,
   MinDelayUpdate as MinDelayUpdateEvent,
   OperationCanceled as OperationCanceledEvent,
   OperationExecuted as OperationExecutedEvent,
@@ -17,8 +15,8 @@ import {
   WithdrawalAssetProcessed as WithdrawalAssetProcessedEvent,
   WithdrawalProcessed as WithdrawalProcessedEvent,
 } from "../generated/PrimordiumExecutorV1/PrimordiumExecutorV1";
-import { ExecutorCallExecutedEvent, ExecutorData, ExecutorModule } from "../generated/schema";
-import { getExecutorData, getExecutorModule } from "./utils";
+import { ExecutorCallExecutedEvent, ExecutorModule, ExecutorOperation } from "../generated/schema";
+import { formatBigIntAsId, getExecutorData } from "./utils";
 
 export function handleBalanceSharesManagerUpdate(
   event: BalanceSharesManagerUpdateEvent
@@ -64,10 +62,6 @@ export function handleEnabledModule(event: EnabledModuleEvent): void {
 
 export function handleDisabledModule(event: DisabledModuleEvent): void {
   store.remove("ExecutorModule", event.params.module.toHex());
-  // executorModule.enabled = false;
-  // executorModule.enabledAtBlock = null;
-  // executorModule.enabledAtTimestamp = null;
-  // executorModule.save();
 }
 
 export function handleCallExecuted(event: CallExecutedEvent): void {
@@ -86,52 +80,38 @@ export function handleCallExecuted(event: CallExecutedEvent): void {
   entity.save();
 }
 
-// export function handleOperationScheduled(event: OperationScheduledEvent): void {
-//   let entity = new OperationScheduled(
-//     event.transaction.hash.concatI32(event.logIndex.toI32()),
-//   )
-//   entity.opNonce = event.params.opNonce
-//   entity.module = event.params.module
-//   entity.to = event.params.to
-//   entity.value = event.params.value
-//   entity.data = event.params.data
-//   entity.operation = event.params.operation
-//   entity.delay = event.params.delay
+export function handleOperationScheduled(event: OperationScheduledEvent): void {
+  let entity = new ExecutorOperation(formatBigIntAsId(event.params.opNonce));
+  entity.module = event.params.module
+  entity.to = event.params.to
+  entity.value = event.params.txValue
+  entity.calldata = event.params.data
+  entity.operation = event.params.operation
+  entity.delay = event.params.delay
+  entity.scheduledAtBlock = event.block.number
+  entity.scheduledAtTimestamp = event.block.timestamp
 
-//   entity.blockNumber = event.block.number
-//   entity.blockTimestamp = event.block.timestamp
-//   entity.transactionHash = event.transaction.hash
+  entity.isCanceled = false;
+  entity.isExecuted = false;
 
-//   entity.save()
-// }
+  entity.save()
+}
 
-// export function handleOperationCanceled(event: OperationCanceledEvent): void {
-//   let entity = new OperationCanceled(
-//     event.transaction.hash.concatI32(event.logIndex.toI32()),
-//   )
-//   entity.opNonce = event.params.opNonce
-//   entity.module = event.params.module
+export function handleOperationCanceled(event: OperationCanceledEvent): void {
+  let entity = ExecutorOperation.load(formatBigIntAsId(event.params.opNonce)) as ExecutorOperation;
+  entity.isCanceled = true;
+  entity.canceledAtBlock = event.block.number;
+  entity.canceledAtTimestamp = event.block.timestamp;
+  entity.save();
+}
 
-//   entity.blockNumber = event.block.number
-//   entity.blockTimestamp = event.block.timestamp
-//   entity.transactionHash = event.transaction.hash
-
-//   entity.save()
-// }
-
-// export function handleOperationExecuted(event: OperationExecutedEvent): void {
-//   let entity = new OperationExecuted(
-//     event.transaction.hash.concatI32(event.logIndex.toI32()),
-//   )
-//   entity.opNonce = event.params.opNonce
-//   entity.module = event.params.module
-
-//   entity.blockNumber = event.block.number
-//   entity.blockTimestamp = event.block.timestamp
-//   entity.transactionHash = event.transaction.hash
-
-//   entity.save()
-// }
+export function handleOperationExecuted(event: OperationExecutedEvent): void {
+  let entity = ExecutorOperation.load(formatBigIntAsId(event.params.opNonce)) as ExecutorOperation;
+  entity.isExecuted = true;
+  entity.executedAtBlock = event.block.number;
+  entity.executedAtTimestamp = event.block.timestamp;
+  entity.save()
+}
 
 // export function handleDepositRegistered(event: DepositRegisteredEvent): void {
 //   let entity = new DepositRegistered(

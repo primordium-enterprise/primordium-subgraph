@@ -10,6 +10,7 @@ import {
   Delegate,
   ExecutorData,
   ExecutorModule,
+  ExecutorOperation,
   GovernanceData,
   Member,
   Proposal,
@@ -181,17 +182,6 @@ export function getExecutorData(): ExecutorData {
   }
 
   return executorData;
-}
-
-export function getExecutorModule(module: Address): ExecutorModule {
-  let executorModule = ExecutorModule.load(module);
-
-  if (executorModule == null) {
-    executorModule = new ExecutorModule(module);
-    executorModule.enabled = false;
-  }
-
-  return executorModule;
 }
 
 // Role hashes, set manually in accordance with PrimordiumGovernorV1 contract roles
