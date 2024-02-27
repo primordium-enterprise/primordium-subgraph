@@ -350,3 +350,59 @@ type ExecutorOperation @entity {
   # Block timestamp when executed (or null)
   executedAtTimestamp: BigInt
 }
+
+type DepositRegistered @entity(immutable: true) {
+  id: Bytes!
+
+  # The address of the member that received the minted MUSHI tokens
+  account: Member!
+
+  # The address of the deposited quote asset
+  quoteAsset: Bytes!
+
+  # The amount of deposited quote asset
+  depositAmount: BigInt!
+
+  # The amount of MUSHI tokens minted to the account
+  mintAmount: BigInt!
+
+  # Block number of this event
+  blockNumber: BigInt!
+
+  # Block timestamp of this event
+  blockTimestamp: BigInt!
+
+  # Transaction hash that contained this event
+  transactionHash: Bytes!
+}
+
+type WithdrawalProcessed @entity(immutable: true) {
+  id: Bytes!
+
+  # The withdrawing member
+  account: Member!
+
+  # Address that receives the ETH/ERC20 payouts
+  receiver: Bytes!
+
+  # The amount of MUSHI shares burned
+  sharesBurned: BigInt!
+
+  # The total supply of MUSHI shares (prior to burning these shares)
+  totalSharesSupply: BigInt!
+
+  # Addresses of ERC20 tokens paid out to the receiver (address(0) for ETH)
+  assets: [Bytes!]!
+
+  # The payout amount of each of the listed assets above
+  payouts: [BigInt!]!
+
+  # Block number
+  blockNumber: BigInt!
+
+  # Block timestamp
+  blockTimestamp: BigInt!
+
+  # Transaction hash
+  transactionHash: Bytes!
+}

@@ -12,6 +12,7 @@ import {
   createBalanceSharesManagerUpdateEvent,
   createCallExecutedEvent,
   createChangedGuardEvent,
+  createDepositRegisteredEvent,
   createDisabledModuleEvent,
   createDistributorUpdateEvent,
   createEnabledModuleEvent,
@@ -26,6 +27,7 @@ import {
   handleBalanceSharesManagerUpdate,
   handleCallExecuted,
   handleChangedGuard,
+  handleDepositRegistered,
   handleDisabledModule,
   handleDistributorUpdate,
   handleEnabledModule,
@@ -37,6 +39,7 @@ import {
 } from "../src/primordium-executor-v1";
 import { formatBigIntAsId, getExecutorData } from "../src/utils";
 import {
+  DepositRegistered,
   ExecutorCallExecutedEvent,
   ExecutorModule,
   ExecutorOperation,
@@ -208,3 +211,21 @@ describe("executor operations...", () => {
     );
   });
 });
+
+describe("deposits and withdrawals...", () => {
+  beforeAll(clearStore)
+
+  test("handleDepositRegistered()", () => {
+    const event = createDepositRegisteredEvent(address1, Address.zero(), BigInt.fromI32(1), BigInt.fromI32(200));
+    handleDepositRegistered(event);
+
+    let entity = DepositRegistered.load(event.transaction.hash.concatI32(event.logIndex.toI32())) as DepositRegistered;
+    assert.bytesEquals(event.params.account, entity.account);
+    assert.bytesEquals(event.params.quoteAsset, entity.quoteAsset);
+    assert.bigIntEquals(event.params.depositAmount, entity.depositAmount);
+    assert.bigIntEquals(event.params.mintAmount, entity.mintAmount);
+    assert.bigIntEquals(event.block.number, entity.blockNumber);
+    assert.bigIntEquals(event.block.timestamp, entity.blockTimestamp);
+    assert.bytesEquals(event.transaction.hash, entity.transactionHash);
+  })
+})
