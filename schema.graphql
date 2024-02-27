@@ -245,3 +245,61 @@ type GovernanceData @entity {
   # THe percentage that the baseDeadlineExtension decays by every extensionDecayPeriod
   extensionPercentDecay: Int!
 }
+
+type ExecutorData @entity {
+  id: Bytes!
+
+  # Address of the balance shares manager contract
+  balanceSharesManager: Bytes!
+
+  # Address of the shares onboarder contract
+  sharesOnboarder: Bytes!
+
+  # Address of the distributor contract
+  distributor: Bytes!
+
+  # Address of the current zodiac guard for the executor
+  guard: Bytes!
+
+  # The minimum delay (in seconds) before a scheduled operation can be executed
+  minDelay: BigInt!
+}
+
+type ExecutorModule @entity(immutable: true) {
+  # The address of the executor module
+  id: Bytes!
+
+  # True if the module is enabled
+  enabled: Boolean!
+
+  # Block number when this module was enabled
+  enabledAtBlock: BigInt!
+
+  # Block timestmap when this module was enabled
+  enabledAtTimestamp: BigInt!
+}
+
+type ExecutorCallExecutedEvent @entity(immutable: true) {
+  id: Bytes!
+
+  # The call target address
+  target: Bytes!
+
+  # The call value
+  value: BigInt!
+
+  # The calldata
+  calldata: Bytes!
+
+  # The type of operation. 0 for CALL and 1 for DELEGATECALL
+  operation: Int!
+
+  # The block number when executed
+  blockNumber: BigInt!
+
+  # The block timestamp when executed
+  blockTimestamp: BigInt!
+
+  # The transaction hash
+  transactionHash: Bytes!
+}

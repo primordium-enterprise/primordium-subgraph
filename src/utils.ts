@@ -8,6 +8,8 @@ import {
 } from "@graphprotocol/graph-ts";
 import {
   Delegate,
+  ExecutorData,
+  ExecutorModule,
   GovernanceData,
   Member,
   Proposal,
@@ -73,23 +75,23 @@ export function getOrCreateDelegate(address: Address): Delegate {
 }
 
 /**
- * Formats the BigInt proposalId into a Bytes value (formatted as a 32 byte array in big-endian order).
+ * Formats a BigInt into a Bytes value to be used for the `ID` field (formatted as a 32 byte array in big-endian order).
  */
-export function formatProposalId(proposalId: BigInt): Bytes {
-  let formattedProposalId = new Bytes(32);
-  let iterationCount = Math.min(proposalId.byteLength, 32);
+export function formatBigIntAsId(id: BigInt): Bytes {
+  let formattedId = new Bytes(32);
+  let iterationCount = Math.min(id.byteLength, 32);
   for (let i = 0; i < iterationCount; i++) {
-    formattedProposalId[31 - i] = proposalId[i];
+    formattedId[31 - i] = id[i];
   }
-  return formattedProposalId;
+  return formattedId;
 }
 
 /**
- * Converts the formatted 32 byte big-endian proposalId back into a native BigInt value.
+ * Converts the formatted 32 byte big-endian ID back into a native BigInt value.
  */
-export function unformatProposalId(proposalId: Bytes): BigInt {
-  // Formatted proposalId is big-endian, so need to reverse before converting to BigInt
-  return BigInt.fromByteArray(changetype<ByteArray>(proposalId.reverse()));
+export function unformatBigIntAsId(id: Bytes): BigInt {
+  // Formatted id is big-endian, so need to reverse before converting to BigInt
+  return BigInt.fromByteArray(changetype<ByteArray>(id.reverse()));
 }
 
 /**
@@ -97,7 +99,7 @@ export function unformatProposalId(proposalId: Bytes): BigInt {
  */
 export function getOrCreateProposal<T>(id: T): Proposal {
   let _id: Bytes =
-    id instanceof BigInt ? formatProposalId(id) : (id as Bytes);
+    id instanceof BigInt ? formatBigIntAsId(id) : (id as Bytes);
 
   let proposal = Proposal.load(_id);
 
@@ -123,7 +125,7 @@ export function getOrCreateProposalVote(
   proposalId: BigInt,
   delegateId: Bytes
 ): ProposalVote {
-  let id: Bytes = formatProposalId(proposalId).concat(delegateId);
+  let id: Bytes = formatBigIntAsId(proposalId).concat(delegateId);
 
   let proposalVote = ProposalVote.load(id);
 
@@ -135,7 +137,6 @@ export function getOrCreateProposalVote(
 }
 
 export const GOVERNANCE_DATA_ID: Bytes = Bytes.fromUTF8("GOVERNANCE_DATA");
-
 export function getGovernanceData(): GovernanceData {
   let governanceData = GovernanceData.load(GOVERNANCE_DATA_ID);
 
@@ -162,6 +163,35 @@ export function getGovernanceData(): GovernanceData {
   }
 
   return governanceData;
+}
+
+export const EXECUTOR_DATA_ID: Bytes = Bytes.fromUTF8("EXECUTOR_DATA");
+export function getExecutorData(): ExecutorData {
+  let executorData = ExecutorData.load(EXECUTOR_DATA_ID);
+
+  if (executorData == null) {
+    executorData = new ExecutorData(EXECUTOR_DATA_ID);
+    executorData.balanceSharesManager = Address.zero();
+    executorData.sharesOnboarder = Address.zero();
+    executorData.distributor = Address.zero();
+    executorData.guard = Address.zero();
+    executorData.minDelay = BigInt.zero();
+
+    executorData.save();
+  }
+
+  return executorData;
+}
+
+export function getExecutorModule(module: Address): ExecutorModule {
+  let executorModule = ExecutorModule.load(module);
+
+  if (executorModule == null) {
+    executorModule = new ExecutorModule(module);
+    executorModule.enabled = false;
+  }
+
+  return executorModule;
 }
 
 // Role hashes, set manually in accordance with PrimordiumGovernorV1 contract roles

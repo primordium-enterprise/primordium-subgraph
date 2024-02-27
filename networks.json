@@ -7,6 +7,9 @@
     "PrimordiumTokenV1": {
       "address": "0x0f03C4dfd08a6660B9EBD46AB72649975fa1E2f1",
       "startBlock": 19267578
+    },
+    "PrimordiumExecutorV1": {
+      "address": "0xC6aECB46fA57F4631b77FacAb21f552763870048"
     }
   }
 }

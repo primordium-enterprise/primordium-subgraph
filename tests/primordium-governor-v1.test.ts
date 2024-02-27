@@ -65,8 +65,8 @@ import {
   CANCELER_ROLE,
   PROPOSER_ROLE,
   extractTitleFromDescription,
-  formatProposalId,
-  unformatProposalId,
+  formatBigIntAsId,
+  unformatBigIntAsId,
   getGovernanceData,
   getOrCreateDelegate,
   getOrCreateProposal,
@@ -142,7 +142,7 @@ const forVotesWeight = BigInt.fromI32(1000);
 const abstainVotesWeight = BigInt.fromI32(10000);
 
 function getTestProposal(): Proposal {
-  return Proposal.load(formatProposalId(proposalNumber)) as Proposal;
+  return Proposal.load(formatBigIntAsId(proposalNumber)) as Proposal;
 }
 
 describe("Proposals...", () => {
@@ -173,7 +173,7 @@ describe("Proposals...", () => {
 
     let proposal = getTestProposal();
     assert.assertNotNull(proposal);
-    assert.bigIntEquals(proposalNumber, unformatProposalId(proposal.id));
+    assert.bigIntEquals(proposalNumber, unformatBigIntAsId(proposal.id));
     assert.addressEquals(proposer, Address.fromBytes(proposal.proposer));
     assert.booleanEquals(true, proposal.isProposerRole);
     for (let i = 0; i < targets.length; i++) {
@@ -227,7 +227,7 @@ describe("Proposals...", () => {
         event.params.voter
       );
       assert.bytesEquals(
-        formatProposalId(proposalNumber),
+        formatBigIntAsId(proposalNumber),
         proposalVote.proposal
       );
       assert.bytesEquals(event.params.voter, proposalVote.delegate);
@@ -262,7 +262,7 @@ describe("Proposals...", () => {
         event.params.voter
       );
       assert.bytesEquals(
-        formatProposalId(proposalNumber),
+        formatBigIntAsId(proposalNumber),
         proposalVote.proposal
       );
       assert.bytesEquals(event.params.voter, proposalVote.delegate);
@@ -297,7 +297,7 @@ describe("Proposals...", () => {
         event.params.voter
       );
       assert.bytesEquals(
-        formatProposalId(proposalNumber),
+        formatBigIntAsId(proposalNumber),
         proposalVote.proposal
       );
       assert.bytesEquals(event.params.voter, proposalVote.delegate);
