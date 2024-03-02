@@ -39,18 +39,18 @@ type Delegate @entity {
   cancelerRoleExpiresAt: BigInt!
 }
 
-type _Schema_
-  @fulltext(
-    name: "proposalSearch"
-    language: en
-    algorithm: rank
-    include: [
-      {
-        entity: "Proposal"
-        fields: [{ name: "title" }, { name: "description" }]
-      }
-    ]
-  )
+# type _Schema_
+#   @fulltext(
+#     name: "proposalSearch"
+#     language: en
+#     algorithm: rank
+#     include: [
+#       {
+#         entity: "Proposal"
+#         fields: [{ name: "title" }, { name: "description" }]
+#       }
+#     ]
+#   )
 
 enum ProposalState {
   PENDING

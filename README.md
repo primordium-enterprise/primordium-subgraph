@@ -18,11 +18,13 @@ The subgraph manifest can be generated using the mustache template file `subgrap
 
 To run locally:
 1. Start an anvil instance at port 8545 and deploy the contracts
+    > **NOTE:** *When starting a fresh anvil instance to index, you will need to delete the "./data" folder before starting the graph-node.*
 2. Start the graph node locally using docker:
 
     ```bash
     pnpm graph-node
     ```
+
 
 3. Deploy the anvil subgraph template to the graph node (the below command creates the proper subgraph.yaml manifest with the mustache template and additionally creates the subgraph on the local Graph Node prior to deploying):
 

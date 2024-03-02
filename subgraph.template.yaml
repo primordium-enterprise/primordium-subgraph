@@ -4,8 +4,8 @@ indexerHints:
   prune: never
 schema:
   file: ./schema.graphql
-features:
-  - fullTextSearch
+# features:
+#   - fullTextSearch
 dataSources:
   - kind: ethereum
     name: PrimordiumExecutorV1
@@ -110,7 +110,7 @@ dataSources:
         - event: ProposalThresholdBPSUpdate(uint256,uint256)
           handler: handleProposalThresholdBPSUpdate
         - event: QuorumBPSUpdate(uint256,uint256)
-          handler: handleQuorumBPSUpdate(uint256,uint256)
+          handler: handleQuorumBPSUpdate
         - event: ProposalGracePeriodUpdate(uint256,uint256)
           handler: handleProposalGracePeriodUpdate
         - event: GovernorBaseInitialized(address,address,uint256,uint256,bool)
