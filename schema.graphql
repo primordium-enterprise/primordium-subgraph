@@ -189,7 +189,7 @@ type ProposalVote @entity {
 }
 
 type GovernanceData @entity {
-  id: Bytes!
+  id: ID!
 
   # The total MUSHI supply
   totalSupply: BigInt!
@@ -247,7 +247,7 @@ type GovernanceData @entity {
 }
 
 type ExecutorData @entity {
-  id: Bytes!
+  id: ID!
 
   # Address of the balance shares manager contract
   balanceSharesManager: Bytes!

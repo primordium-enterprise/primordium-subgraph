@@ -137,7 +137,7 @@ export function getOrCreateProposalVote(
   return proposalVote;
 }
 
-export const GOVERNANCE_DATA_ID: Bytes = Bytes.fromUTF8("GOVERNANCE_DATA");
+export const GOVERNANCE_DATA_ID: string = "GOVERNANCE_DATA";
 export function getGovernanceData(): GovernanceData {
   let governanceData = GovernanceData.load(GOVERNANCE_DATA_ID);
 
@@ -166,7 +166,7 @@ export function getGovernanceData(): GovernanceData {
   return governanceData;
 }
 
-export const EXECUTOR_DATA_ID: Bytes = Bytes.fromUTF8("EXECUTOR_DATA");
+export const EXECUTOR_DATA_ID: string = "EXECUTOR_DATA";
 export function getExecutorData(): ExecutorData {
   let executorData = ExecutorData.load(EXECUTOR_DATA_ID);
 
