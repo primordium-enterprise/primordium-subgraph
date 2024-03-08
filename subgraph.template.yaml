@@ -26,6 +26,7 @@ dataSources:
         - ChangedGuard
         - DepositRegistered
         - DisabledModule
+        - DistributorUpdate
         - EIP1271MessageCanceled
         - EIP1271MessageSigned
         - EnabledModule
@@ -56,6 +57,8 @@ dataSources:
           handler: handleDepositRegistered
         - event: DisabledModule(indexed address)
           handler: handleDisabledModule
+        - event: DistributorUpdate(address,address)
+          handler: handleDistributorUpdate
         - event: EnabledModule(indexed address)
           handler: handleEnabledModule
         - event: MinDelayUpdate(uint256,uint256)

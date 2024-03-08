@@ -8,9 +8,6 @@ import {
 } from "@graphprotocol/graph-ts";
 import {
   Delegate,
-  ExecutorData,
-  ExecutorModule,
-  ExecutorOperation,
   GovernanceData,
   Member,
   Proposal,
@@ -137,12 +134,12 @@ export function getOrCreateProposalVote(
   return proposalVote;
 }
 
-export const GOVERNANCE_DATA_ID: string = "GOVERNANCE_DATA";
+export const GOVERNANCE_DATA: string = "GOVERNANCE_DATA";
 export function getGovernanceData(): GovernanceData {
-  let governanceData = GovernanceData.load(GOVERNANCE_DATA_ID);
+  let governanceData = GovernanceData.load(GOVERNANCE_DATA);
 
   if (governanceData == null) {
-    governanceData = new GovernanceData(GOVERNANCE_DATA_ID);
+    governanceData = new GovernanceData(GOVERNANCE_DATA);
     governanceData.totalSupply = BigInt.zero();
     governanceData.maxSupply = BigInt.zero();
     governanceData.proposalCount = BigInt.zero();
@@ -159,29 +156,16 @@ export function getGovernanceData(): GovernanceData {
     governanceData.baseDeadlineExtension = BigInt.zero();
     governanceData.extensionDecayPeriod = BigInt.zero();
     governanceData.extensionPercentDecay = 0;
+    governanceData.balanceSharesManager = Address.zero();
+    governanceData.sharesOnboarder = Address.zero();
+    governanceData.distributor = Address.zero();
+    governanceData.guard = Address.zero();
+    governanceData.executorMinDelay = BigInt.zero();
 
     governanceData.save();
   }
 
   return governanceData;
-}
-
-export const EXECUTOR_DATA_ID: string = "EXECUTOR_DATA";
-export function getExecutorData(): ExecutorData {
-  let executorData = ExecutorData.load(EXECUTOR_DATA_ID);
-
-  if (executorData == null) {
-    executorData = new ExecutorData(EXECUTOR_DATA_ID);
-    executorData.balanceSharesManager = Address.zero();
-    executorData.sharesOnboarder = Address.zero();
-    executorData.distributor = Address.zero();
-    executorData.guard = Address.zero();
-    executorData.minDelay = BigInt.zero();
-
-    executorData.save();
-  }
-
-  return executorData;
 }
 
 // Role hashes, set manually in accordance with PrimordiumGovernorV1 contract roles

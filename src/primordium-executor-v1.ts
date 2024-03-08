@@ -22,40 +22,40 @@ import {
   ExecutorOperation,
   WithdrawalProcessed,
 } from "../generated/schema";
-import { formatBigIntAsId, getExecutorData } from "./utils";
+import { formatBigIntAsId, getGovernanceData } from "./utils";
 
 export function handleBalanceSharesManagerUpdate(
   event: BalanceSharesManagerUpdateEvent
 ): void {
-  let executorData = getExecutorData();
-  executorData.balanceSharesManager = event.params.newBalanceSharesManager;
-  executorData.save();
+  let governanceData = getGovernanceData();
+  governanceData.balanceSharesManager = event.params.newBalanceSharesManager;
+  governanceData.save();
 }
 
 export function handleSharesOnboarderUpdate(
   event: SharesOnboarderUpdateEvent
 ): void {
-  let executorData = getExecutorData();
-  executorData.sharesOnboarder = event.params.newSharesOnboarder;
-  executorData.save();
+  let governanceData = getGovernanceData();
+  governanceData.sharesOnboarder = event.params.newSharesOnboarder;
+  governanceData.save();
 }
 
 export function handleDistributorUpdate(event: DistributorUpdate): void {
-  let executorData = getExecutorData();
-  executorData.distributor = event.params.newDistributor;
-  executorData.save();
+  let governanceData = getGovernanceData();
+  governanceData.distributor = event.params.newDistributor;
+  governanceData.save();
 }
 
 export function handleChangedGuard(event: ChangedGuardEvent): void {
-  let executorData = getExecutorData();
-  executorData.guard = event.params.guard;
-  executorData.save();
+  let governanceData = getGovernanceData();
+  governanceData.guard = event.params.guard;
+  governanceData.save();
 }
 
 export function handleMinDelayUpdate(event: MinDelayUpdateEvent): void {
-  let executorData = getExecutorData();
-  executorData.minDelay = event.params.newMinDelay;
-  executorData.save();
+  let governanceData = getGovernanceData();
+  governanceData.executorMinDelay = event.params.newMinDelay;
+  governanceData.save();
 }
 
 export function handleEnabledModule(event: EnabledModuleEvent): void {

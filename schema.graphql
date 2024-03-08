@@ -244,10 +244,6 @@ type GovernanceData @entity {
 
   # THe percentage that the baseDeadlineExtension decays by every extensionDecayPeriod
   extensionPercentDecay: Int!
-}
-
-type ExecutorData @entity {
-  id: ID!
 
   # Address of the balance shares manager contract
   balanceSharesManager: Bytes!
@@ -262,7 +258,7 @@ type ExecutorData @entity {
   guard: Bytes!
 
   # The minimum delay (in seconds) before a scheduled operation can be executed
-  minDelay: BigInt!
+  executorMinDelay: BigInt!
 }
 
 type ExecutorModule @entity(immutable: true) {

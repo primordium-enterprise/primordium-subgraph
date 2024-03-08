@@ -39,7 +39,7 @@ import {
   handleSharesOnboarderUpdate,
   handleWithdrawalProcessed,
 } from "../src/primordium-executor-v1";
-import { formatBigIntAsId, getExecutorData } from "../src/utils";
+import { formatBigIntAsId, getGovernanceData } from "../src/utils";
 import {
   DepositRegistered,
   ExecutorCallExecutedEvent,
@@ -61,10 +61,10 @@ describe("executor data updates...", () => {
     );
     handleBalanceSharesManagerUpdate(event);
 
-    let executorData = getExecutorData();
+    let governanceData = getGovernanceData();
     assert.bytesEquals(
       event.params.newBalanceSharesManager,
-      executorData.balanceSharesManager
+      governanceData.balanceSharesManager
     );
   });
 
@@ -72,10 +72,10 @@ describe("executor data updates...", () => {
     const event = createSharesOnboarderUpdateEvent(Address.zero(), address1);
     handleSharesOnboarderUpdate(event);
 
-    let executorData = getExecutorData();
+    let governanceData = getGovernanceData();
     assert.bytesEquals(
       event.params.newSharesOnboarder,
-      executorData.sharesOnboarder
+      governanceData.sharesOnboarder
     );
   });
 
@@ -83,24 +83,24 @@ describe("executor data updates...", () => {
     const event = createDistributorUpdateEvent(Address.zero(), address1);
     handleDistributorUpdate(event);
 
-    let executorData = getExecutorData();
-    assert.bytesEquals(event.params.newDistributor, executorData.distributor);
+    let governanceData = getGovernanceData();
+    assert.bytesEquals(event.params.newDistributor, governanceData.distributor);
   });
 
   test("handleChangedGuard()", () => {
     const event = createChangedGuardEvent(address1);
     handleChangedGuard(event);
 
-    let executorData = getExecutorData();
-    assert.bytesEquals(event.params.guard, executorData.guard);
+    let governanceData = getGovernanceData();
+    assert.bytesEquals(event.params.guard, governanceData.guard);
   });
 
   test("handleMinDelayUpdate()", () => {
     const event = createMinDelayUpdateEvent(BigInt.zero(), BigInt.fromI32(500));
     handleMinDelayUpdate(event);
 
-    let executorData = getExecutorData();
-    assert.bigIntEquals(event.params.newMinDelay, executorData.minDelay);
+    let governanceData = getGovernanceData();
+    assert.bigIntEquals(event.params.newMinDelay, governanceData.executorMinDelay);
   });
 });
 
