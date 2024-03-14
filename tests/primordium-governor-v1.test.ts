@@ -74,11 +74,7 @@ import {
 } from "../src/utils";
 import { Delegate, Proposal } from "../generated/schema";
 import {
-  PROPOSAL_STATE_ACTIVE,
-  PROPOSAL_STATE_CANCELED,
-  PROPOSAL_STATE_EXECUTED,
-  PROPOSAL_STATE_PENDING,
-  PROPOSAL_STATE_QUEUED,
+  ProposalState,
 } from "../src/constants";
 
 const account = Address.fromString(ADDRESS_1);
@@ -199,7 +195,7 @@ describe("Proposals...", () => {
     assert.bigIntEquals(voteEnd, proposal.voteEnd);
     assert.bigIntEquals(voteEnd, proposal.originalVoteEnd);
     assert.stringEquals("blocknumber", proposal.clockMode);
-    assert.stringEquals(PROPOSAL_STATE_PENDING, proposal.state);
+    assert.i32Equals(ProposalState.Pending, proposal.state);
     assert.bigIntEquals(BigInt.zero(), proposal.forVotes);
     assert.bigIntEquals(BigInt.zero(), proposal.againstVotes);
     assert.bigIntEquals(BigInt.zero(), proposal.abstainVotes);
@@ -240,7 +236,7 @@ describe("Proposals...", () => {
       assert.bigIntEquals(event.block.timestamp, proposalVote.blockTimestamp);
 
       let proposal = getTestProposal();
-      assert.stringEquals(PROPOSAL_STATE_ACTIVE, proposal.state);
+      assert.i32Equals(ProposalState.Active, proposal.state);
       assert.bigIntEquals(againstVotesWeight, proposal.againstVotes);
       assert.bigIntEquals(BigInt.zero(), proposal.forVotes);
       assert.bigIntEquals(BigInt.zero(), proposal.abstainVotes);
@@ -275,7 +271,7 @@ describe("Proposals...", () => {
       assert.bigIntEquals(event.block.timestamp, proposalVote.blockTimestamp);
 
       let proposal = getTestProposal();
-      assert.stringEquals(PROPOSAL_STATE_ACTIVE, proposal.state);
+      assert.i32Equals(ProposalState.Active, proposal.state);
       assert.bigIntEquals(againstVotesWeight, proposal.againstVotes);
       assert.bigIntEquals(forVotesWeight, proposal.forVotes);
       assert.bigIntEquals(BigInt.zero(), proposal.abstainVotes);
@@ -310,7 +306,7 @@ describe("Proposals...", () => {
       assert.bigIntEquals(event.block.timestamp, proposalVote.blockTimestamp);
 
       let proposal = getTestProposal();
-      assert.stringEquals(PROPOSAL_STATE_ACTIVE, proposal.state);
+      assert.i32Equals(ProposalState.Active, proposal.state);
       assert.bigIntEquals(againstVotesWeight, proposal.againstVotes);
       assert.bigIntEquals(forVotesWeight, proposal.forVotes);
       assert.bigIntEquals(abstainVotesWeight, proposal.abstainVotes);
@@ -337,7 +333,7 @@ describe("Proposals...", () => {
     handleProposalQueued(event);
 
     let proposal = getTestProposal();
-    assert.stringEquals(PROPOSAL_STATE_QUEUED, proposal.state);
+    assert.i32Equals(ProposalState.Queued, proposal.state);
     assert.bigIntEquals(event.params.eta, proposal.eta as BigInt);
     assert.bigIntEquals(event.block.number, proposal.queuedAtBlock as BigInt);
     assert.bigIntEquals(
@@ -351,7 +347,7 @@ describe("Proposals...", () => {
     handleProposalExecuted(event);
 
     let proposal = getTestProposal();
-    assert.stringEquals(PROPOSAL_STATE_EXECUTED, proposal.state);
+    assert.i32Equals(ProposalState.Executed, proposal.state);
     assert.bigIntEquals(event.block.number, proposal.executedAtBlock as BigInt);
     assert.bigIntEquals(
       event.block.timestamp,
@@ -371,7 +367,7 @@ describe("Proposals...", () => {
     handleProposalCanceled(event);
 
     let proposal = getTestProposal();
-    assert.stringEquals(PROPOSAL_STATE_CANCELED, proposal.state);
+    assert.i32Equals(ProposalState.Canceled, proposal.state);
     assert.bigIntEquals(event.block.number, proposal.canceledAtBlock as BigInt);
     assert.bigIntEquals(
       event.block.timestamp,

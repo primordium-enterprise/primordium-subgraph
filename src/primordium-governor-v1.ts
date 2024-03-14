@@ -34,11 +34,7 @@ import {
 } from "./utils";
 import { Delegate } from "../generated/schema";
 import {
-  PROPOSAL_STATE_ACTIVE,
-  PROPOSAL_STATE_CANCELED,
-  PROPOSAL_STATE_EXECUTED,
-  PROPOSAL_STATE_PENDING,
-  PROPOSAL_STATE_QUEUED,
+  ProposalState,
 } from "./constants";
 
 export function handleProposalCreated(event: ProposalCreated): void {
@@ -70,9 +66,9 @@ export function handleProposalCreated(event: ProposalCreated): void {
 
   const currentClock = getCurrentClock(event, proposal.clockMode);
   if (currentClock < proposal.voteStart) {
-    proposal.state = PROPOSAL_STATE_PENDING;
+    proposal.state = ProposalState.Pending;
   } else {
-    proposal.state = PROPOSAL_STATE_ACTIVE;
+    proposal.state = ProposalState.Active;
   }
 
   proposal.forVotes = BigInt.zero();
@@ -98,7 +94,7 @@ export function handleProposalDeadlineExtended(
 
 export function handleProposalQueued(event: ProposalQueued): void {
   let proposal = getOrCreateProposal(event.params.proposalId);
-  proposal.state = PROPOSAL_STATE_QUEUED;
+  proposal.state = ProposalState.Queued;
   proposal.eta = event.params.eta;
   proposal.queuedAtBlock = event.block.number;
   proposal.queuedAtTimestamp = event.block.timestamp;
@@ -107,7 +103,7 @@ export function handleProposalQueued(event: ProposalQueued): void {
 
 export function handleProposalExecuted(event: ProposalExecuted): void {
   let proposal = getOrCreateProposal(event.params.proposalId);
-  proposal.state = PROPOSAL_STATE_EXECUTED;
+  proposal.state = ProposalState.Executed;
   proposal.executedAtBlock = event.block.number;
   proposal.executedAtTimestamp = event.block.timestamp;
   proposal.executedTransactionHash = event.transaction.hash;
@@ -117,7 +113,7 @@ export function handleProposalExecuted(event: ProposalExecuted): void {
 export function handleProposalCanceled(event: ProposalCanceled): void {
   let proposal = getOrCreateProposal(event.params.proposalId);
   let delegate = getOrCreateDelegate(event.params.canceler);
-  proposal.state = PROPOSAL_STATE_CANCELED;
+  proposal.state = ProposalState.Canceled;
   proposal.canceler = event.params.canceler;
   proposal.isCancelerRole = delegate.cancelerRoleExpiresAt.gt(
     event.block.timestamp
@@ -183,8 +179,8 @@ export function handleVoteCastWithParams(event: VoteCastWithParams): void {
   proposalVote.save();
 
   // Update proposal state to active (if necessary)
-  if (proposal.state != PROPOSAL_STATE_ACTIVE) {
-    proposal.state = PROPOSAL_STATE_ACTIVE;
+  if (proposal.state != ProposalState.Active) {
+    proposal.state = ProposalState.Active;
   }
 
   // Update the votes on the proposal

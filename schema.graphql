@@ -53,14 +53,14 @@ type Delegate @entity {
 #   )
 
 enum ProposalState {
-  PENDING
-  ACTIVE
-  CANCELED
-  DEFEATED
-  SUCCEEDED
-  QUEUED
-  EXPIRED
-  EXECUTED
+  Pending
+  Active
+  Canceled
+  Defeated
+  Succeeded
+  Queued
+  Expired
+  Executed
 }
 
 # Proposals created on the Governor proxy contract
@@ -113,8 +113,8 @@ type Proposal @entity {
   # Inferred EIP-6372 CLOCK_MODE(), will be either "mode=blocknumber&from=default" or "mode=timestamp"
   clockMode: ClockMode!
 
-  # The proposal state (not updated from `PENDING` to `ACTIVE` until the first vote is cast)
-  state: ProposalState!
+  # The proposal state (not updated from `Pending` to `Active` until the first vote is cast)
+  state: Int!
 
   # Vote count in support of the proposal
   forVotes: BigInt!
