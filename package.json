@@ -3,6 +3,7 @@
   "license": "MIT",
   "scripts": {
     "graph-node": "docker-compose up",
+    "graph-node-new": "rm -rf ./data && pnpm graph-node",
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ primordium-dao",
