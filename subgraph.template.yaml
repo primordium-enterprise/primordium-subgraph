@@ -1,11 +1,9 @@
-specVersion: 1.0.0
+specVersion: 0.0.8
 description: Subgraph indexing of PrimordiumDAO governance data.
 indexerHints:
   prune: never
 schema:
   file: ./schema.graphql
-# features:
-#   - fullTextSearch
 dataSources:
   - kind: ethereum
     name: PrimordiumExecutorV1
