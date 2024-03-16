@@ -1,0 +1,19 @@
+{
+    "network": "mainnet",
+    "PrimordiumExecutorV1": {
+        "address": "0x6337b8630a3C641BEB0b7c26Fa542e31d6215c64",
+        "startBlock": 19448420
+    },
+    "PrimordiumTokenV1": {
+        "address": "0x2aADC4ab6F8679C86f453a0FCc8B6B10d872335D",
+        "startBlock": 19448420
+    },
+    "PrimordiumSharesOnboarderV1": {
+        "address": "0xAf504e6811F0785eb0da73E5B252885cDE301d3C",
+        "startBlock": 19448420
+    },
+    "PrimordiumGovernorV1": {
+        "address": "0xc384cb3bc23CB99826405b91c2E285e92E293Db8",
+        "startBlock": 19448420
+    }
+}
