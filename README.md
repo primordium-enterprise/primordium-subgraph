@@ -1,5 +1,5 @@
-# primordium-dao-subgraph
-Subgraph for the PrimordiumDAO smart contracts.
+# primordium-subgraph
+Subgraph for the Primordium business enterprise smart contracts.
 
 ## Setup
 This project uses pnpm for managing packages.

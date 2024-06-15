@@ -65,7 +65,7 @@ enum ProposalState {
 
 # Proposals created on the Governor proxy contract
 type Proposal @entity {
-  # The proposal ID used to identifiy the proposal on-chain (an incrementing integer for PrimordiumDAO)
+  # The proposal ID used to identifiy the proposal on-chain (an incrementing integer for Primordium)
   id: Bytes!
 
   # The address that submitted the proposal
@@ -194,7 +194,7 @@ type GovernanceData @entity {
   # The total MUSHI supply
   totalSupply: BigInt!
 
-  # The max MUSHI supply (is updateable by the PrimordiumDAO executor)
+  # The max MUSHI supply (is updateable by the Primordium executor)
   maxSupply: BigInt!
 
   # Total amount of created proposals

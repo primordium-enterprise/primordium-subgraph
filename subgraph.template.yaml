@@ -1,5 +1,5 @@
 specVersion: 0.0.8
-description: Subgraph indexing of PrimordiumDAO governance data.
+description: Subgraph indexing of Primordium governance data.
 indexerHints:
   prune: never
 schema:
