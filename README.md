@@ -1,5 +1,5 @@
 # primordium-subgraph
-Subgraph for the Primordium business enterprise smart contracts.
+Subgraph for the [Primordium smart contracts.](https://github.com/primordium-enterprise/primordium-contracts)
 
 ## Setup
 This project uses pnpm for managing packages.
